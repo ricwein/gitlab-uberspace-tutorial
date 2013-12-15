@@ -121,3 +121,18 @@ Der `git_path` stimmt wenn git per toast installiert wurde, ansonten `which git`
 alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 `listen "127.0.0.1:8080"...` port in einen noch freien port ändern, z.B. 9765 `listen "127.0.0.1:9765"...`
 
+### resque.yml Konfiguration
+
+Richtigen redis Zugang einfügen
+`produktion: 'unix:/home/[Nutzername]/.redis/sock'`
+Socket ändern, falls er bei der GitLab Shell schon anders war.
+
+### database.yml Konfiguration
+
+Unter `produktion: ` die MySQL Nutzerdatein eintragen: 
+```ruby
+    database: [Datenbank]
+    username: [Nutzername]
+    password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf zu finden
+```
+
