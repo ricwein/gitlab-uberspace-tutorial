@@ -96,3 +96,18 @@ Die Redis Einstellungen sind zu ändern.
     git config --global core.autocrlf input
 ```
 
+### gitlab.yml Konfiguration
+
+`vim config/gitlab.yml`
+`host: [Nutzername].[Host].uberspace.de`
+`https: true`
+
+`user: [Nutzername]` muss auskommentiert werden
+
+Unter 3: Advanced Settings:
+alle `/home/git/...` ändern in `/home/[Nutzername]/...`
+```ruby
+    git:
+        bin_path: /home/[Nutzername]/.toast/armed/bin/git
+```
+Der `git_path` stimmt wenn git per toast installiert wurde, ansonten `which git`, um den richtigen Pfad herauszufinden.
