@@ -22,13 +22,25 @@ Ruby wird in der Version 1.9.3+ benötigt.
 
 Auf den Uberspaceservern wird standartmäßig eine ältere Version genutzt. [Hier](http://uberspace.de/dokuwiki/development:ruby) wird erklärt wie die neueren zur Verfügung stehenden Versionen aktiviert werden.
 
-####.bashrc vs. .bash_profile
+#### .bashrc vs. .bash_profile
 SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH Keys direkt auf das GL Shell Script verweisen wird `.bash_profile` nicht geladen. Deshalb müssen die `$PATH` Angaben die den neuen Rubypfad, sowie den Ruby Gem Pfad hinzufügen aus der `.bash_profile` in `.bashrc` kopiert werden.
 
 #### Bundler Gem
 
 `gem install bundler --no-ri --no-rdoc`
 
-##System User
+## System User
 
-Auf den Uberspace Servern gibt es nicht die Möglichkeit einen extra User git anzulegen. Der Normale Nutzer geht auch. Jedoch muss das in allen Konfigurationsfiles beachtet werden.
+Auf den Uberspace Servern gibt es nicht die Möglichkeit einen extra User `git` anzulegen. Der Normale Nutzer geht auch. Jedoch muss das in allen Konfigurationsfiles beachtet werden.
+
+## Gitlab Shell
+
+Nach Anleitung:
+```bash
+cd ~
+git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.7.9
+cd gitlab-shell
+cp config.yml.example config.yml
+vim config.yml
+./bin/install
+```
