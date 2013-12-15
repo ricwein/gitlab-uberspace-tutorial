@@ -55,10 +55,44 @@ Wichtig in der `config.yml`:
 
 Die Redis Einstellungen sind zu ändern. 
 `bin: /usr/local/bin/redis-cli` Der Pfad sollte der selbe sein wie die Ausgabe von `which redis-cli`.
-`host: ...` & `port: ...` mit einem `# ` auskommentieren
+`host: ...` & `port: ...` mit einem `# ` auskommentieren, dafür bei socket das `# ` entfernen.
 `socket: /home/[Nutzername]/.redis/sock`, der Pfad findet sich auch in der Datei `~/.redis/conf` um sicherzugehen.
 
 
 ```bash
     ./bin/install
 ```
+
+## GitLab
+
+```bash
+    cd ~
+    git clone https://github.com/gitlabhq/gitlabhq.git -b 6-3-stable gitlab
+    cd gitlab
+    
+    # Clone a few config
+    cp config/gitlab.yml.example config/gitlab.yml
+    cp config/unicorn.rb.example config/unicorn.rb
+    cp config/resque.yml.example config/resque.yml
+    cp config/database.yml.mysql config/database.yml
+    
+    cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb #No need to edit this later
+    
+    #Make a few Direktories and make sure the chmod is right
+    mkdir /home/[Nutzername]/gitlab-satellites
+    mkdir tmp/pids/
+    mkdir tmp/sockets/
+    mkdir public/uploads
+    
+    chmod -R u+rwX  log/
+    chmod -R u+rwX  tmp/
+    chmod -R u+rwX  tmp/pids/
+    chmod -R u+rwX  tmp/sockets/
+    chmod -R u+rwX  public/uploads
+    
+    #Muss nicht aber ist nützlich
+    git config --global user.name "GitLab"
+    git config --global user.email "gitlab@localhost"
+    git config --global core.autocrlf input
+```
+
