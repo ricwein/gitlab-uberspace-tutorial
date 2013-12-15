@@ -64,6 +64,8 @@ Wichtig in der `config.yml`:
     socket: /home/[Nutzername]/.redis/sock #der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
 ```
 
+Nachdem die Konfigurationdatei geändert ist.
+
 ```bash
     ./bin/install
 ```
@@ -146,6 +148,12 @@ username: [Nutzername]
 password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf zu finden
 ```
 
+### Hack a little bit to get Redis socket used at all times
+
+`vim config/enviroments/production.rb`
+
+edit cache_store to `config.cache_store = :redis_store, {:url => resque_url}`
+
 ## Install Bundle Gems
 
 `bundle install --deployment --without development test postgres aws`
@@ -158,3 +166,16 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
     # Type 'yes' to create the database.
     # When done you see 'Administrator account created:'
 ```
+
+## Init Script
+
+GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace nicht möglich. Bisher läuft mein GitLab nur über manuelles starten. 
+
+`vim lib/support/init.d/gitlab`
+
+Change `appuser="[Nutzername]"`
+
+`lib/support/init.d/gitlab {start|restart|stop}`
+
+
+
