@@ -49,15 +49,20 @@ Unten die Shellbefehle nach Anleitung.
     vim config.yml
 ```
 Wichtig in der `config.yml`:
-`user: [Nutzername]`
-`gitlab_url: "https://[Nutzername].[Host].uberspace.de"`
+
 Änderung aller Pfade von `/home/git/...` zu `/home/[Nutzername]/...`
 
-Die Redis Einstellungen sind zu ändern. 
-`bin: /usr/local/bin/redis-cli` Der Pfad sollte der selbe sein wie die Ausgabe von `which redis-cli`.
-`host: ...` & `port: ...` mit einem `# ` auskommentieren, dafür bei socket das `# ` entfernen.
-`socket: /home/[Nutzername]/.redis/sock`, der Pfad findet sich auch in der Datei `~/.redis/conf` um sicherzugehen.
-
+```ruby
+    user: [Nutzername]
+    gitlab_url: "https://[Nutzername].[Host].uberspace.de"
+    
+    #[...]Redis Einstellungen
+    
+    bin: /usr/local/bin/redis-cli #Der Pfad sollte der selbe sein wie die Ausgabe von 'which redis-cli'
+    # host: ...
+    # port: ...
+    socket: /home/[Nutzername]/.redis/sock #der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
+```
 
 ```bash
     ./bin/install
@@ -101,10 +106,12 @@ Die Redis Einstellungen sind zu ändern.
 
 `vim config/gitlab.yml`
 
-`host: [Nutzername].[Host].uberspace.de`
-`https: true`
-
-`user: [Nutzername]` muss auskommentiert werden
+```ruby
+    host: [Nutzername].[Host].uberspace.de
+    https: true
+    [...]
+    user: [Nutzername] #muss auskommentiert werden
+```
 
 Unter 3: Advanced Settings:
 
@@ -151,4 +158,3 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
     # Type 'yes' to create the database.
     # When done you see 'Administrator account created:'
 ```
-
