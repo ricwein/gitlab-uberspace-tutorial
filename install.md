@@ -197,10 +197,14 @@ Falls alles passt, bis auf das nicht kopierte init.d script, dann ..
 
 In `~/html` oder einem Subdomainfolder eine `.htaccess` erstellen und damit füllen
 
-´´´bash
+```bash
     <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
     RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Pfad]/$1 [P]
     </IfModule>
 ```
+
+## Fertig
+
+Jetzt sollte erstmal alles funktionieren.
