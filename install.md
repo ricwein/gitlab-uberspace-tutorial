@@ -108,6 +108,7 @@ Die Redis Einstellungen sind zu ändern.
 Unter 3: Advanced Settings:
 
 alle `/home/git/...` ändern in `/home/[Nutzername]/...`
+
 ```ruby
 git:
     bin_path: /home/[Nutzername]/.toast/armed/bin/git
@@ -130,6 +131,7 @@ Socket ändern, falls er bei der GitLab Shell schon anders war.
 ### database.yml Konfiguration
 
 Unter `produktion: ` die MySQL Nutzerdatein eintragen: 
+
 ```ruby
 database: [Datenbank]
 username: [Nutzername]
