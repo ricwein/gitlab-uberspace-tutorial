@@ -16,6 +16,10 @@ Git wird in der Version 1.7.10+ benötigt. Nicht zu verwechseln mit 1.7.1, was a
 
 Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eure Version. Falls sie zu alt ist könnt ihr über Toast eine neuere Version installieren. Sucht dazu [hier](http://code.google.com/p/git-core/downloads/list) eine Version und kopiert den Link zum Tarball. Mit `toast arm [URL zum Tarball]` wird diese installiert und eingerichtet.
 
+### Redis
+
+Installiere Redis wie [hier](http://uberspace.de/dokuwiki/database:redis) beschrieben. Redis akzeptiert auf Uberspace nur Verbindungen zu seinem Socket, was in allen Konfigurationsfiles von GitLab zu beachten ist.
+
 ### Ruby
 
 Ruby wird in der Version 1.9.3+ benötigt.
@@ -35,12 +39,26 @@ Auf den Uberspace Servern gibt es nicht die Möglichkeit einen extra User `git` 
 
 ## Gitlab Shell
 
-Nach Anleitung:
+Unten die Shellbefehle nach Anleitung.
+
 ```bash
-cd ~
-git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.7.9
-cd gitlab-shell
-cp config.yml.example config.yml
-vim config.yml
-./bin/install
+    cd ~
+    git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.7.9
+    cd gitlab-shell
+    cp config.yml.example config.yml
+    vim config.yml
+```
+Wichtig in der `config.yml`:
+`user: [Nutzername]`
+`gitlab_url: "https://[Nutzername].[Host].uberspace.de"`
+Änderung aller Pfade von `/home/git/...` zu `/home/[Nutzername]/...`
+
+Die Redis Einstellungen sind zu ändern. 
+`bin: /usr/local/bin/redis-cli` Der Pfad sollte der selbe sein wie die Ausgabe von `which redis-cli`.
+`host: ...` & `port: ...` mit einem `# ` auskommentieren
+`socket: /home/[Nutzername]/.redis/sock`, der Pfad findet sich auch in der Datei `~/.redis/conf` um sicherzugehen.
+
+
+```bash
+    ./bin/install
 ```
