@@ -89,6 +89,7 @@ Die Redis Einstellungen sind zu ändern.
     chmod -R u+rwX  tmp/pids/
     chmod -R u+rwX  tmp/sockets/
     chmod -R u+rwX  public/uploads
+    chmod o-rwx config/database.yml
     
     #Muss nicht aber ist nützlich
     git config --global user.name "GitLab"
@@ -137,3 +138,17 @@ database: [Datenbank]
 username: [Nutzername]
 password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf zu finden
 ```
+
+## Install Bundle Gems
+
+`bundle install --deployment --without development test postgres aws`
+
+## Init Database 
+
+```bash
+    bundle exec rake gitlab:setup RAILS_ENV=production
+
+    # Type 'yes' to create the database.
+    # When done you see 'Administrator account created:'
+```
+
