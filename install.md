@@ -109,8 +109,8 @@ Unter 3: Advanced Settings:
 
 alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 ```ruby
-    git:
-        bin_path: /home/[Nutzername]/.toast/armed/bin/git
+git:
+    bin_path: /home/[Nutzername]/.toast/armed/bin/git
 ```
 Der `git_path` stimmt wenn git per toast installiert wurde, ansonten `which git`, um den richtigen Pfad herauszufinden.
 
@@ -131,8 +131,7 @@ Socket ändern, falls er bei der GitLab Shell schon anders war.
 
 Unter `produktion: ` die MySQL Nutzerdatein eintragen: 
 ```ruby
-    database: [Datenbank]
-    username: [Nutzername]
-    password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf zu finden
+database: [Datenbank]
+username: [Nutzername]
+password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf zu finden
 ```
-
