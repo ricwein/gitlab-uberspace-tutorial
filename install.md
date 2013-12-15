@@ -175,7 +175,32 @@ GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das
 
 Change `appuser="[Nutzername]"`
 
-`lib/support/init.d/gitlab {start|restart|stop}`
+Danach den Dienst starten. Mit Status ein paar mal zur Sicherheit überprüfen. Fehler finden sich unter `log/`.
 
+`lib/support/init.d/gitlab {start|restart|stop|status}`
 
+## Check Status
 
+```bash
+
+    bundle exec rake gitlab:env:info RAILS_ENV=production
+
+    bundle exec rake gitlab:check RAILS_ENV=production
+    
+```
+
+Falls alles passt, bis auf das nicht kopierte init.d script, dann ..
+
+`bundle exec rake assets:precompile RAILS_ENV=production`
+
+## Apache Redirect
+
+In `~/html` oder einem Subdomainfolder eine `.htaccess` erstellen und damit füllen
+
+´´´bash
+    <IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Pfad]/$1 [P]
+    </IfModule>
+```
