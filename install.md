@@ -43,7 +43,7 @@ Unten die Shellbefehle nach Anleitung.
 
 ```bash
     cd ~
-    git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.3
+    git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.5
     cd gitlab-shell
     cp config.yml.example config.yml
     vim config.yml
@@ -74,7 +74,7 @@ Nachdem die Konfigurationdatei geändert ist.
 
 ```bash
     cd ~
-    git clone https://github.com/gitlabhq/gitlabhq.git -b 6-8-stable gitlab
+    git clone https://github.com/gitlabhq/gitlabhq.git -b 6-9-stable gitlab
     cd gitlab
     
     # Clone a few config
@@ -152,7 +152,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 `vim config/environments/production.rb`
 
-edit cache_store to `config.cache_store = :redis_store, {:url => resque_url}`
+edit cache_store to `config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}`
 
 ## Install Bundle Gems
 
@@ -173,7 +173,7 @@ GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das
 
 `vim lib/support/init.d/gitlab`
 
-Change `app_user="[Nutzername]"`
+Ändere `app_user="[Nutzername]"`
 
 Danach den Dienst starten. Mit Status ein paar mal zur Sicherheit überprüfen. Fehler finden sich unter `log/`.
 
@@ -208,3 +208,20 @@ In `~/html` oder einem Subdomainfolder eine `.htaccess` erstellen und damit fül
 ## Fertig
 
 Jetzt sollte erstmal alles funktionieren.
+
+## Upgraden
+
+### Gitlab
+
+`cd gitlab`
+
+Erstmal ein Backup mittels `bundle exec rake gitlab:backup:create RAILS_ENV=production` erstellen.
+
+Nun gitlab stoppen: `./gitlab/lib/support/init.d/gitlab stop`
+
+und upgraden `ruby script/upgrade.rb`
+
+Nun müssen sowohl der `app_user` in `lib/support/init.d/gitlab`, als auch `config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}` in `config/environments/production.rb` erneut gesetzt werden.
+
+Falls alles erfolgreich verlief könnt ihr Gitlab nun wieder starten `./gitlab/lib/support/init.d/gitlab start`
+
