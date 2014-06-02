@@ -31,7 +31,9 @@ SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH 
 
 #### Bundler Gem
 
-`gem install bundler --no-ri --no-rdoc`
+`gem install bundler --user-install --no-ri --no-rdoc`.
+
+`--user-install` sorgt dafür, dass der Gem im Nutzerverzeichnis statt global installiert wird.
 
 ## System User
 
@@ -201,7 +203,7 @@ In `~/html` oder einem Subdomainfolder eine `.htaccess` erstellen und damit fül
     <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
-    RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Pfad]/$1 [P]
+    RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
     </IfModule>
 ```
 
