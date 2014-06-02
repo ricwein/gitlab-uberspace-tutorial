@@ -201,9 +201,9 @@ In `~/html` oder einem Subdomainfolder eine `.htaccess` erstellen und damit fül
 
 ```bash
     <IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /
-    RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
+        RewriteEngine On
+        RewriteBase /
+        RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
     </IfModule>
 ```
 
