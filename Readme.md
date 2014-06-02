@@ -227,3 +227,8 @@ Nun müssen sowohl der `app_user` in `lib/support/init.d/gitlab`, als auch `conf
 
 Falls alles erfolgreich verlief könnt ihr Gitlab nun wieder starten `./gitlab/lib/support/init.d/gitlab start`
 
+## Impressum
+
+Original Author: [Benjamin Milde](http://kobralab.centaurus.uberspace.de/benni/uberspace/blob/master/install.md)
+
+Modified & Bugfixes: [Richard Weinhold](http://gitlab.ricwein.com/ricwein/uberspacetutorial/tree/master)
