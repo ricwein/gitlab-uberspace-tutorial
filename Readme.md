@@ -154,9 +154,12 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 `vim config/environments/production.rb`
 
-ändert cache_store zu `config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}`
+ändert `config.cache_store` und wechselt `config.serve_static_assets` von *false* auf *true*, damit Gitlab statische Files und benutzeruploads laden kann!
 
-und wechselt `config.serve_static_assets` von *false* auf *true*, damit Gitlab statische Files und benutzeruploads laden kann!
+```bash
+    config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
+    config.serve_static_assets = true
+```  
 
 ## Install Bundle Gems
 
