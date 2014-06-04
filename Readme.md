@@ -150,11 +150,13 @@ username: [Nutzername]
 password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf zu finden
 ```
 
-### Hack a little bit to get Redis socket used at all times
+### "Hack a little bit" damit Gitlab sicher den Redis-Socket benutzt
 
 `vim config/environments/production.rb`
 
-edit cache_store to `config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}`
+ändert cache_store zu `config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}`
+
+und wechselt `config.serve_static_assets` von *false* auf *true*, damit Gitlab statische Files und benutzeruploads laden kann!
 
 ## Install Bundle Gems
 
