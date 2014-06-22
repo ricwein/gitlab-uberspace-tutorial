@@ -48,7 +48,7 @@ Unten die Shellbefehle nach Anleitung.
     git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.5
     cd gitlab-shell
     cp config.yml.example config.yml
-    vim config.yml
+    nano config.yml
 ```
 Wichtig in der `config.yml`:
 
@@ -108,7 +108,7 @@ Nachdem die Konfigurationdatei geändert ist.
 
 ### gitlab.yml Konfiguration
 
-`vim config/gitlab.yml`
+`nano config/gitlab.yml`
 
 ```ruby
     host: [Nutzername].[Host].uberspace.de
@@ -129,7 +129,7 @@ Der `git_path` stimmt wenn git per toast installiert wurde, ansonten `which git`
 
 ### unicorn.rb Konfiguration
 
-`vim config/unicorn.rb`
+`nano config/unicorn.rb`
 
 alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 `listen "127.0.0.1:8080"...` port in einen noch freien port ändern, z.B. 9765 `listen "127.0.0.1:9765"...`
@@ -152,7 +152,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 ### "Hack a little bit" damit Gitlab sicher den Redis-Socket benutzt
 
-`vim config/environments/production.rb`
+`nano config/environments/production.rb`
 
 ändert `config.cache_store` und wechselt `config.serve_static_assets` von *false* auf *true*, damit Gitlab statische Files und benutzeruploads laden kann!
 
@@ -178,7 +178,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace nicht möglich. Bisher läuft mein GitLab nur über manuelles starten. 
 
-`vim lib/support/init.d/gitlab`
+`nano lib/support/init.d/gitlab`
 
 Ändere `app_user="[Nutzername]"`
 
@@ -231,13 +231,13 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
      
 Änderungen im Startup-Skript und production.rb müssen erneut gesetzt werden.
 
-`nano lib/support/init.d/gitlab`
+`nano lib/support/init.d/gitlab` [siehe auch](#init-script)
 
 ```bash
     app_user="[Nutzername]"
 ```
 
-`nano config/environments/production.rb`
+`nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
 
 ```bash
     config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
