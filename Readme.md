@@ -220,17 +220,35 @@ Jetzt sollte erstmal alles funktionieren.
 
 ### Gitlab
 
-`cd gitlab`
+Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess stoppen und das upgrade-Skript durchlaufen lassen.
 
-Erstmal ein Backup mittels `bundle exec rake gitlab:backup:create RAILS_ENV=production` erstellen.
+```bash
+    cd gitlab
+    bundle exec rake gitlab:backup:create RAILS_ENV=production
+    ./gitlab/lib/support/init.d/gitlab stop
+    ruby script/upgrade.rb
+```
+     
+Änderungen im Startup-Skript und production.rb müssen erneut gesetzt werden.
 
-Nun gitlab stoppen: `./gitlab/lib/support/init.d/gitlab stop`
+`nano lib/support/init.d/gitlab`
 
-und upgraden `ruby script/upgrade.rb`
+```bash
+    app_user="[Nutzername]"
+```
 
-Nun müssen sowohl der `app_user` in `lib/support/init.d/gitlab`, als auch `config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}` in `config/environments/production.rb` erneut gesetzt werden.
+`nano config/environments/production.rb`
 
-Falls alles erfolgreich verlief könnt ihr Gitlab nun wieder starten `./gitlab/lib/support/init.d/gitlab start`
+```bash
+    config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
+    config.serve_static_assets = true
+```
+
+Falls alles erfolgreich verlief kann Gitlab nun wieder gestartet werden.
+
+```bash
+    ./gitlab/lib/support/init.d/gitlab start
+```
 
 ## Impressum
 
