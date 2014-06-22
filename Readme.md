@@ -1,4 +1,4 @@
-# Installation
+# Installation von Gitlab 7.0!
 
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://github.com/gitlabhq/gitlabhq/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
 
@@ -45,7 +45,7 @@ Unten die Shellbefehle nach Anleitung.
 
 ```bash
     cd ~
-    git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.5
+    git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.6
     cd gitlab-shell
     cp config.yml.example config.yml
     nano config.yml
@@ -76,7 +76,7 @@ Nachdem die Konfigurationdatei geändert ist.
 
 ```bash
     cd ~
-    git clone https://github.com/gitlabhq/gitlabhq.git -b 6-9-stable gitlab
+    git clone https://github.com/gitlabhq/gitlabhq.git -b 7-0-stable gitlab
     cd gitlab
     
     # Clone a few config
@@ -125,7 +125,7 @@ alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 git:
     bin_path: /home/[Nutzername]/.toast/armed/bin/git
 ```
-Der `git_path` stimmt wenn git per toast installiert wurde, ansonten `which git`, um den richtigen Pfad herauszufinden.
+Der `git_path` stimmt wenn git per toast installiert wurde, ansonsten `which git`, um den richtigen Pfad herauszufinden.
 
 ### unicorn.rb Konfiguration
 
@@ -142,7 +142,7 @@ Socket ändern, falls er bei der GitLab Shell schon anders war.
 
 ### database.yml Konfiguration
 
-Unter `production: ` die MySQL Nutzerdatein eintragen: 
+Unter `production: ` die MySQL Nutzerdaten eintragen: 
 
 ```ruby
 database: [Datenbank]
@@ -154,7 +154,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 `nano config/environments/production.rb`
 
-ändert `config.cache_store` und wechselt `config.serve_static_assets` von *false* auf *true*, damit Gitlab statische Files und benutzeruploads laden kann!
+ändert `config.cache_store` und wechselt `config.serve_static_assets` von *false* auf *true*, damit Gitlab statische Files und Benutzer-Uploads laden kann!
 
 ```bash
     config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
@@ -202,7 +202,7 @@ Falls alles passt, bis auf das nicht kopierte init.d script, dann ..
 
 ## Apache Redirect
 
-In `~/html` oder einem Subdomainfolder eine `.htaccess` erstellen und damit füllen
+In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit füllen
 
 ```bash
     <IfModule mod_rewrite.c>
@@ -220,7 +220,7 @@ Jetzt sollte erstmal alles funktionieren.
 
 ### Gitlab
 
-Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess stoppen und das upgrade-Skript durchlaufen lassen.
+Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess stoppen und das Upgrade-Skript durchlaufen lassen.
 
 ```bash
     cd gitlab
@@ -249,6 +249,68 @@ Falls alles erfolgreich verlief kann Gitlab nun wieder gestartet werden.
 ```bash
     ./gitlab/lib/support/init.d/gitlab start
 ```
+
+## Upgraden von 6.x auf 7.0
+
+Das Upgrade-Skript hat bei mir das Update auf 7.0 leider nicht erkannt, weswegen ich per Hand Gitlab geupdatet habe.
+
+Die Gitlab-Shell ist der einfachste Part:
+
+```bash
+   cd gitlab-shell
+   git pull
+   git checkout v1.9.6
+```
+
+Nun folgt Gitlab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
+
+Kurz: Backup. Gitlab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten migrieren. Assets kompilieren und aufräumen. *"Hacks"* wiederherstellen. Gitlab starten.
+
+```bash
+   cd gitlab
+   bundle exec rake gitlab:backup:create RAILS_ENV=production
+   ./gitlab/lib/support/init.d/gitlab stop
+   
+   git fetch --all
+   git checkout 7-0-stable
+   
+   bundle install --without development test postgres aws --deployment
+   bundle exec rake db:migrate RAILS_ENV=production
+   bundle exec rake assets:clean assets:precompile cache:clear RAILS_ENV=production
+   
+   nano lib/support/init.d/gitlab
+   nano config/environments/production.rb
+   
+   ./gitlab/lib/support/init.d/gitlab start
+```
+
+wobei für unsere *"Hacks"* wieder gilt:
+
+`nano lib/support/init.d/gitlab` [siehe auch](#init-script)
+
+```bash
+    app_user="[Nutzername]"
+```
+
+`nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
+
+```bash
+    config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
+    config.serve_static_assets = true
+```
+
+Nach dem Start schadet ein erneuter Check nicht:
+
+```bash
+   bundle exec rake gitlab:env:info RAILS_ENV=production
+   bundle exec rake gitlab:check RAILS_ENV=production
+```
+
+***generic Helper Error***
+
+Nach dem Update spuckt Gitlab bei mir leider beim Check und anderen bundle-task öfter den Fehler `Instance method "lock!" is already defined in ActiveRecord::Base, use generic helper instead or set StateMachine::Machine.ignore_method_conflicts = true.` aus.
+
+Ich weiß leider nicht genau was die Ursache hierfür ist, auf den Arbeitsablauf von Gitlab wirkt sich der Fehler jedoch nicht aus.
 
 ## Impressum
 
