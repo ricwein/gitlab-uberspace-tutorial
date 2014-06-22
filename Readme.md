@@ -308,7 +308,11 @@ Nach dem Start schadet ein erneuter Check nicht:
 
 ***generic Helper Error***
 
-Nach dem Update spuckt Gitlab bei mir leider beim Check und anderen bundle-task öfter den Fehler `Instance method "lock!" is already defined in ActiveRecord::Base, use generic helper instead or set StateMachine::Machine.ignore_method_conflicts = true.` aus.
+Nach dem Update spuckt Gitlab bei mir leider beim Check und anderen bundle-task öfter den folgenden Fehler aus.
+
+```bash
+   Instance method "lock!" is already defined in ActiveRecord::Base, use generic helper instead or set StateMachine::Machine.ignore_method_conflicts = true.
+```
 
 Ich weiß nicht genau was die Ursache hierfür ist, auf den Arbeitsablauf von Gitlab wirkt sich der Fehler jedoch nicht aus.
 
