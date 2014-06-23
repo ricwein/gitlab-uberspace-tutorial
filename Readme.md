@@ -214,6 +214,8 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
     </IfModule>
 ```
 
+siehe Beispiel-.htaccess: [.htaccess](_.htaccess)
+
 ## Fertig
 
 Jetzt sollte erstmal alles funktionieren.
