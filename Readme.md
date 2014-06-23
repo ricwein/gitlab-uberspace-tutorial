@@ -66,6 +66,8 @@ Wichtig in der `config.yml`:
     socket: /home/[Nutzername]/.redis/sock #der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
 ```
 
+**Für die gitlab_url mit https muss der komplette Pfad inklusive Server und .uberspace.de angegeben werden, damit das Zertifikat auch passt. Auch wenn ihr eine eigene Domain haben solltet!**
+
 Nachdem die Konfigurationdatei geändert ist.
 
 ```bash
@@ -215,6 +217,60 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
 ## Fertig
 
 Jetzt sollte erstmal alles funktionieren.
+
+## Gitlab-Shell und die SSH-keys
+
+Ein großes Problem bei Gitlab und uberspace ist das fehlen eines separaten Users. Loggt ihr euch für gewöhnlich per Key über SSH ein, wird dies nach der Installation der Gitlab-Shell nicht mehr möglich sein. Diese blockt nämlich den Shell-Zugriff für alle auf Gitlab registrierten Keys! Trotzdem wollen wir aber gerne die Gitlab-Pfade und Nutzerrechte zum clonen, pushen etc. benutzen.
+Im Grunde genommen gibt es dafür zwei Mögliche Lösungen:
+
+### Separates Keypaar
+
+Ihr legt euch ein separates Key-Paar für den Shellzugriff an.
+
+```bash
+   ssh-keygen -f shellAccess
+```
+
+und kopiert den Inhalt des Public-Keys (`.pub`) in die `~/.ssh/authorized_keys` eures Servers.
+
+Anschließend müsst ihr allerdings beim Login noch deutlich machen, mit welchem Keypaar ihr euch einloggen wollt. Das geht am Besten, indem ihr euch in eure `~/.ssh/config` einen Host-*Alias* anlegt, der dann in etwa wie folgt aussehen sollte:
+
+```bash
+   Host Servername.ShellKey
+   HostName [Nutzername].[Host].uberspace.de
+   IdentityFile ~/.ssh/shellAccess
+   User [Nutzername]
+```
+
+Anschließend können wir uns direkt mit `ssh Servername.ShellKey` einloggen!
+
+### per Passwort
+
+Alternative Zwei funktioniert so ähnlich, verzichtet aber auf ein weiteres Keypaar. Stattdessen loggen wir uns old-school mäßig via Passwort ein. Hierfür muss allerdings ssh konkret der Login mit einem Key verboten werden.
+
+Das geht einmalig mit einem Konstrukt wie:
+
+```bash
+   ssh -o PreferredAuthentications=keyboard-interactive -o PubkeyAuthentication=no [Nutzername]@[Host]
+```
+
+Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die sshconfig `~/.ssh/config`.
+
+```bash
+   Host Servername.NoKey
+   HostName [Nutzername].[Host].uberspace.de
+   PubkeyAuthentication no
+   User [Nutzername]
+```
+
+Der Befehl zum Verbinden lautet nun `ssh Servername.NoKey`.
+
+### ControlMaster
+
+Falls Ihr für SSH einen ControlMaster verwendet, solltet ihr diesen für die entsprechenden Einträge deaktivieren, um eine Verwirrung des Shell-Logins und des Gitlab-Logins zu vermeiden!
+
+Dazu einfach `ControlMaster no` noch zum Host in die sshconfig hinzufügen. Fertig!
+
 
 ## Upgraden
 
