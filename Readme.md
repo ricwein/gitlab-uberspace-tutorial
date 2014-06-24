@@ -231,6 +231,7 @@ Ihr legt euch ein separates Key-Paar für den Shellzugriff an.
 
 ```bash
    ssh-keygen -f shellAccess
+   # optional auch mit custom-Mail/Kommentar: ssh-keygen -f shellAccess -C [aussagekrätiger-Name]@[server]
 ```
 
 und kopiert den Inhalt des Public-Keys (`.pub`) in die `~/.ssh/authorized_keys` eures Servers.
