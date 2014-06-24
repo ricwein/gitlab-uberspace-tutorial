@@ -1,6 +1,7 @@
-# Installation von Gitlab 7.0!
+# Installation von Gitlab 7.0! (mit https - yay!)
 
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
+
 
 ## Dependencies
 
@@ -8,7 +9,8 @@ Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [
 
 Python wird in einer Version 2.5+ (nicht 3.0+) benötigt.
 
-Python ist auf den Uberspaceservern bereits aktiviert. Jedoch manchmal noch in der Version 2.4. Prüft das mit dem Befehl `python -V`. Falls noch die alte Version aktiv ist, könnt ihr nach der Anleitung [hier](http://uberspace.de/dokuwiki/development:python) eine neuere aktivieren.
+Python ist auf den Uberspace-Servern bereits aktiviert. Jedoch manchmal noch in der Version 2.4. Prüft das mit dem Befehl `python -V`. Falls noch die alte Version aktiv ist, könnt ihr nach der Anleitung [hier](https://wiki.uberspace.de/development:python) eine neuere aktivieren.
+
 
 ### Git 
 
@@ -16,28 +18,35 @@ Git wird in der Version 1.7.10+ benötigt. Nicht zu verwechseln mit 1.7.1, was a
 
 Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eure Version. Falls sie zu alt ist könnt ihr über Toast eine neuere Version installieren. Sucht dazu [hier](http://code.google.com/p/git-core/downloads/list) eine Version und kopiert den Link zum Tarball. Mit `toast arm [URL zum Tarball]` wird diese installiert und eingerichtet.
 
+
 ### Redis
 
-Installiere Redis wie [hier](http://uberspace.de/dokuwiki/database:redis) beschrieben. Redis akzeptiert auf Uberspace nur Verbindungen zu seinem Socket, was in allen Konfigurationsfiles von GitLab zu beachten ist.
+Installiere Redis wie [hier](https://wiki.uberspace.de/database:redis) beschrieben. Redis akzeptiert auf Uberspace nur Verbindungen zu seinem Socket, was in allen Konfigurationsfiles von GitLab zu beachten ist.
+
 
 ### Ruby
 
 Ruby wird in der Version 1.9.3+ benötigt.
 
-Auf den Uberspaceservern wird standartmäßig eine ältere Version genutzt. [Hier](http://uberspace.de/dokuwiki/development:ruby) wird erklärt wie die neueren zur Verfügung stehenden Versionen aktiviert werden.
+Auf den Uberspaceservern wird standartmäßig eine ältere Version genutzt. [Hier](https://wiki.uberspace.de/development:ruby) wird erklärt wie die neueren zur Verfügung stehenden Versionen aktiviert werden.
+
 
 #### .bashrc vs. .bash_profile
 SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH Keys direkt auf das GL Shell Script verweisen wird `.bash_profile` nicht geladen. Deshalb müssen die `$PATH` Angaben die den neuen Rubypfad, sowie den Ruby Gem Pfad hinzufügen aus der `.bash_profile` in `.bashrc` kopiert werden.
 
-#### Bundler Gem
 
-`gem install bundler --user-install --no-ri --no-rdoc`.
+#### Bundler Gem
+```bash
+   gem install bundler --user-install --no-ri --no-rdoc
+```
 
 `--user-install` sorgt dafür, dass der Gem im Nutzerverzeichnis statt global installiert wird.
+
 
 ## System User
 
 Auf den Uberspace Servern gibt es nicht die Möglichkeit einen extra User `git` anzulegen. Der Normale Nutzer geht auch. Jedoch muss das in allen Konfigurationsfiles beachtet werden.
+
 
 ## Gitlab Shell
 
@@ -54,16 +63,23 @@ Wichtig in der `config.yml`:
 
 Änderung aller Pfade von `/home/git/...` zu `/home/[Nutzername]/...`
 
+Außerdem sind folgende Änderungen durchzuführen:
+
 ```ruby
-    user: [Nutzername]
-    gitlab_url: "https://[Nutzername].[Host].uberspace.de"
-    
-    #[...]Redis Einstellungen
-    
-    bin: /usr/local/bin/redis-cli #Der Pfad sollte der selbe sein wie die Ausgabe von 'which redis-cli'
-    # host: ...
-    # port: ...
-    socket: /home/[Nutzername]/.redis/sock #der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
+   user: [Nutzername]
+   gitlab_url: "https://[Nutzername].[Host].uberspace.de"
+   
+   #[...]Redis Einstellungen
+   
+   bin: /usr/local/bin/redis-cli
+   # Der Pfad sollte der selbe sein wie die Ausgabe von 'which redis-cli'
+   
+   # auskommentieren:
+   # host: ...
+   # port: ...
+   
+   socket: /home/[Nutzername]/.redis/sock
+   # der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
 ```
 
 **Für die gitlab_url mit https muss der komplette Pfad inklusive Server und .uberspace.de angegeben werden, damit das Zertifikat auch passt. Auch wenn ihr eine eigene Domain haben solltet!**
@@ -73,6 +89,7 @@ Nachdem die Konfigurationdatei geändert ist.
 ```bash
     ./bin/install
 ```
+
 
 ## GitLab
 
@@ -108,6 +125,7 @@ Nachdem die Konfigurationdatei geändert ist.
     git config --global core.autocrlf input
 ```
 
+
 ### gitlab.yml Konfiguration
 
 `nano config/gitlab.yml`
@@ -127,7 +145,9 @@ alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 git:
     bin_path: /home/[Nutzername]/.toast/armed/bin/git
 ```
-Der `git_path` stimmt wenn git per toast installiert wurde, ansonsten `which git`, um den richtigen Pfad herauszufinden.
+
+**Der `git_path` sollte stimmen wenn git per toast installiert wurde. Sicherheitshalber per `which git`den Pfad auf seine Richtigkeit überprüfen**
+
 
 ### unicorn.rb Konfiguration
 
@@ -136,11 +156,19 @@ Der `git_path` stimmt wenn git per toast installiert wurde, ansonsten `which git
 alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 `listen "127.0.0.1:8080"...` port in einen noch freien port ändern, z.B. 9765 `listen "127.0.0.1:9765"...`
 
+**Diesen Port am besten merken oder irgendwo notieren. Wir brauche ihn später nochmal!**
+
+> Um Verwirrungen vorzubeugen. Laut [Uberspace-Wiki](https://wiki.uberspace.de/system:ports) sind Ports nur im Bereich von 61000 bis 65535 erlaubt. Dies bezieht sicher aber nur auf Ports, die wir später nach Außen auf dem Server öffnen wollen!
+> Wir hingegen wollen den Port aber nur intern nutzen, um später den Webserver per .htaccess vom externen Port 80 auf unseren lokalen Port weiterzuleiten.
+> Es empfiehlt sich also vermutlich ein Port irgendwo zwischen 1024 und 61000 zu nehmen. Eventuell aufpassen, dass man nicht gerade einen von den [well-known Ports](https://de.wikipedia.org/wiki/Liste_der_standardisierten_Ports) erwischt.
+
+
 ### resque.yml Konfiguration
 
 Richtigen redis Zugang einfügen
 `production: 'unix:/home/[Nutzername]/.redis/sock'`
 Socket ändern, falls er bei der GitLab Shell schon anders war.
+
 
 ### database.yml Konfiguration
 
@@ -151,6 +179,7 @@ database: [Datenbank]
 username: [Nutzername]
 password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf zu finden
 ```
+
 
 ### "Hack a little bit" damit Gitlab sicher den Redis-Socket benutzt
 
@@ -163,9 +192,11 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
     config.serve_static_assets = true
 ```  
 
+
 ## Install Bundle Gems
 
 `bundle install --deployment --without development test postgres aws`
+
 
 ## Init Database 
 
@@ -175,6 +206,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
     # Type 'yes' to create the database.
     # When done you see 'Administrator account created:'
 ```
+
 
 ## Init Script
 
@@ -188,19 +220,6 @@ Danach den Dienst starten. Mit Status ein paar mal zur Sicherheit überprüfen. 
 
 `lib/support/init.d/gitlab {start|restart|stop|status}`
 
-## Check Status
-
-```bash
-
-    bundle exec rake gitlab:env:info RAILS_ENV=production
-
-    bundle exec rake gitlab:check RAILS_ENV=production
-    
-```
-
-Falls alles passt, bis auf das nicht kopierte init.d script, dann ..
-
-`bundle exec rake assets:precompile RAILS_ENV=production`
 
 ## Apache Redirect
 
@@ -219,9 +238,26 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
 
 Die letzte Zeile dabei sollte den Fehler "Can't verify CSRF token authenticity" beim Login mit https beheben.
 
+
+## Check Status
+
+```bash
+
+    bundle exec rake gitlab:env:info RAILS_ENV=production
+
+    bundle exec rake gitlab:check RAILS_ENV=production
+    
+```
+
+Falls alles passt, bis auf das nicht kopierte init.d script, dann ..
+
+`bundle exec rake assets:precompile RAILS_ENV=production`
+
+
 ## Fertig
 
 Jetzt sollte erstmal alles funktionieren.
+
 
 ## Gitlab-Shell und die SSH-keys
 
@@ -230,9 +266,10 @@ Im Grunde genommen gibt es dafür zwei Mögliche Lösungen. Beide haben den Vort
 
 > Zur Nutzung unter Windows kann ich leider keine klare Aussage treffen. Wenn hier jemand Erfahrung hat würde ich mich sehr über Hinweise freuen.
 
+
 ### Separates Keypaar
 
-> Leider habe ich selber es bisher nicht geschafft eine Verbindung mit dieser Methode zum laufen zu bringen. Gitlab-Shell block meinen Zugriff, trotz zusätzlichem Key. Wenn jemand eine Idee oder Lösung hat, wäre ich für Tipps sehr dankbar!
+> Leider habe ich selber es bisher nicht geschafft eine Verbindung mit dieser Methode unter Macintosh (10.9) zum laufen zu bringen. Unter Linux funktioniert alles. Gitlab-Shell block den Zugriff, trotz zusätzlichem Key. Wenn jemand eine Idee oder Lösung hat, wäre ich für Tipps sehr dankbar!
 
 Ihr legt euch ein separates Key-Paar für den Shellzugriff an.
 
@@ -261,6 +298,7 @@ Alternativ lässt sich ssh auch zur einmaligen Nutzung ohne ssh-config überrede
    ssh -i ~/.ssh/shellAccess [Nutzername]@[Host]
 ```
 
+
 ### per Passwort
 
 Alternative Zwei funktioniert so ähnlich, verzichtet aber auf ein weiteres Keypaar. Stattdessen loggen wir uns old-school mäßig via Passwort ein. Hierfür muss allerdings ssh konkret der Login mit einem Key verboten werden.
@@ -281,6 +319,7 @@ Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die sshco
 ```
 
 Der Befehl zum Verbinden lautet nun `ssh Servername.NoKey`.
+
 
 ### ControlMaster
 
@@ -322,6 +361,7 @@ Falls alles erfolgreich verlief kann Gitlab nun wieder gestartet werden.
 ```bash
     ./gitlab/lib/support/init.d/gitlab start
 ```
+
 
 ## Upgraden von 6.x auf 7.0
 
@@ -389,8 +429,11 @@ Nach dem Update spuckt Gitlab bei mir leider beim Check und anderen bundle-task 
 
 Ich weiß nicht genau was die Ursache hierfür ist, auf den Arbeitsablauf von Gitlab wirkt sich der Fehler jedoch nicht aus.
 
+
 ## Impressum
 
-Original Author: [Benjamin Milde](http://kobralab.centaurus.uberspace.de/benni/uberspace/blob/master/install.md)
+Nach einem Tutorial von: [Benjamin Milde](http://kobralab.centaurus.uberspace.de/benni/uberspace/blob/master/install.md)
 
-Modified & Bugfixes: [Richard Weinhold](http://gitlab.ricwein.com/ricwein/uberspacetutorial/tree/master)
+Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](http://gitlab.ricwein.com/ricwein/uberspacetutorial/tree/master)
+
+Support und Feedback von: [G. Bretschner](http://kanedo.net), [C. Raunitschka](http://ch.rauni.me)
