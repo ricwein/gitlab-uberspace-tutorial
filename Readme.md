@@ -227,6 +227,8 @@ Im Grunde genommen gibt es dafür zwei Mögliche Lösungen:
 
 ### Separates Keypaar
 
+> Leider habe ich selber es bisher nicht geschafft eine Verbindung mit dieser Methode zum laufen zu bringen. Gitlab-Shell block meinen Zugriff, trotz zusätzlichem Key. Wenn jemand eine Idee oder Lösung hat, wäre ich für Tipps sehr dankbar!
+
 Ihr legt euch ein separates Key-Paar für den Shellzugriff an.
 
 ```bash
