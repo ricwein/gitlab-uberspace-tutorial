@@ -158,8 +158,8 @@ alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 
 **Diesen Port am besten merken oder irgendwo notieren. Wir brauche ihn später nochmal!**
 
-> Um Verwirrungen vorzubeugen. Laut [Uberspace-Wiki](https://wiki.uberspace.de/system:ports) sind Ports nur im Bereich von 61000 bis 65535 erlaubt. Dies bezieht sicher aber nur auf Ports, die wir später nach Außen auf dem Server öffnen wollen!
-> Wir hingegen wollen den Port aber nur intern nutzen, um später den Webserver per .htaccess vom externen Port 80 auf unseren lokalen Port weiterzuleiten.
+> Um Verwirrungen vorzubeugen. Laut [Uberspace-Wiki](https://wiki.uberspace.de/system:ports) sind Ports nur im Bereich von 61000 bis 65535 erlaubt. Dies bezieht sich aber nur auf Ports, die wir später nach Außen auf dem Server öffnen wollen!
+> Wir hingegen wollen den Port aber nur intern nutzen, um [später](#apache-redirect) den Webserver per .htaccess vom externen Port 80 auf unseren lokalen Port weiterzuleiten.
 > Es empfiehlt sich also vermutlich ein Port irgendwo zwischen 1024 und 61000 zu nehmen. Eventuell aufpassen, dass man nicht gerade einen von den [well-known Ports](https://de.wikipedia.org/wiki/Liste_der_standardisierten_Ports) erwischt.
 
 
