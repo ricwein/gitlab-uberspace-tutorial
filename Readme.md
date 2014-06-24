@@ -223,7 +223,8 @@ Jetzt sollte erstmal alles funktionieren.
 ## Gitlab-Shell und die SSH-keys
 
 Ein großes Problem bei Gitlab und uberspace ist das fehlen eines separaten Users. Loggt ihr euch für gewöhnlich per Key über SSH ein, wird dies nach der Installation der Gitlab-Shell nicht mehr möglich sein. Diese blockt nämlich den Shell-Zugriff für alle auf Gitlab registrierten Keys! Trotzdem wollen wir aber gerne die Gitlab-Pfade und Nutzerrechte zum clonen, pushen etc. benutzen.
-Im Grunde genommen gibt es dafür zwei Mögliche Lösungen:
+Im Grunde genommen gibt es dafür zwei Mögliche Lösungen. Beide haben den Vorteil, dass durch die Nutzung der ssh-config die angelegten Host-Aliases Systemweit zu Verfügung stehen (inklusive SFTP)!
+> Zur Nutzung unter Windows kann ich leider keine klare Aussage treffen. Wenn hier jemand Erfahrung hat würde ich mich sehr über Hinweise freuen.
 
 ### Separates Keypaar
 
@@ -233,7 +234,8 @@ Ihr legt euch ein separates Key-Paar für den Shellzugriff an.
 
 ```bash
    ssh-keygen -f shellAccess
-   # optional auch mit custom-Mail/Kommentar: ssh-keygen -f shellAccess -C [aussagekrätiger-Name]@[server]
+   # optional auch mit custom-Mail/Kommentar:
+   ssh-keygen -f shellAccess -C [aussagekrätiger-Name]@[server]
 ```
 
 und kopiert den Inhalt des Public-Keys (`.pub`) in die `~/.ssh/authorized_keys` eures Servers.
@@ -242,12 +244,18 @@ Anschließend müsst ihr allerdings beim Login noch deutlich machen, mit welchem
 
 ```bash
    Host Servername.ShellKey
-   HostName [Nutzername].[Host].uberspace.de
+   HostName [Host]
    IdentityFile ~/.ssh/shellAccess
    User [Nutzername]
 ```
 
-Anschließend können wir uns direkt mit `ssh Servername.ShellKey` einloggen!
+Nun sollten wir uns direkt mit `ssh Servername.ShellKey` einloggen können!
+
+Alternativ lässt sich ssh auch zur einmaligen Nutzung ohne ssh-config überreden. Das sieht dann in etwa wie folgt aus:
+
+```bash
+   ssh -i ~/.ssh/shellAccess [Nutzername]@[Host]
+```
 
 ### per Passwort
 
