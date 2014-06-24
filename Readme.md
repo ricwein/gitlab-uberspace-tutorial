@@ -212,9 +212,12 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
         RewriteBase /
         RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
     </IfModule>
+    RequestHeader set X-Forwarded-Proto https
 ```
 
-siehe Beispiel-.htaccess: [.htaccess](_.htaccess)
+> siehe Beispiel-.htaccess: [.htaccess](_.htaccess)
+
+Die letzte Zeile dabei sollte den Fehler "Can't verify CSRF token authenticity" beim Login mit https beheben.
 
 ## Fertig
 
