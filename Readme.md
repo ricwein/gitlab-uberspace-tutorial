@@ -14,7 +14,7 @@ Python ist auf den Uberspace-Servern bereits aktiviert. Jedoch manchmal noch in 
 
 ### Git 
 
-Git wird in der Version 1.7.10+ benötigt. Nicht zu verwechseln mit 1.7.1, was auf meinem Uberspace die Version war.
+Git wird in der Version 1.7.10+ benötigt. *Nicht zu verwechseln mit 1.7.1!*
 
 Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eure Version. Falls sie zu alt ist könnt ihr über Toast eine neuere Version installieren. Sucht dazu [hier](https://code.google.com/p/git-core/downloads/list) eine Version und kopiert den Link zum Tarball. Mit `toast arm [URL zum Tarball]` wird diese installiert und eingerichtet.
 
@@ -45,7 +45,7 @@ SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH 
 
 ## System User
 
-Auf den Uberspace Servern gibt es nicht die Möglichkeit einen extra User `git` anzulegen. Der Normale Nutzer geht auch. Jedoch muss das in allen Konfigurationsfiles beachtet werden.
+Auf den Uberspace Servern gibt es nicht die Möglichkeit einen extra User `git` anzulegen. Der Normale Nutzer geht auch. Jedoch muss das in fast allen Konfigurationsfiles beachtet werden.
 
 
 ## Gitlab Shell
@@ -66,20 +66,20 @@ Wichtig in der `config.yml`:
 Außerdem sind folgende Änderungen durchzuführen:
 
 ```ruby
-   user: [Nutzername]
-   gitlab_url: "https://[Nutzername].[Host].uberspace.de"
+    user: [Nutzername]
+    gitlab_url: "https://[Nutzername].[Host].uberspace.de"
+ 
+    #[...]Redis Einstellungen
    
-   #[...]Redis Einstellungen
+    bin: /usr/local/bin/redis-cli
+    # Der Pfad sollte identisch mit der Ausgabe von 'which redis-cli' sein
    
-   bin: /usr/local/bin/redis-cli
-   # Der Pfad sollte der selbe sein wie die Ausgabe von 'which redis-cli'
+    # auskommentieren:
+    # host: ...
+    # port: ...
    
-   # auskommentieren:
-   # host: ...
-   # port: ...
-   
-   socket: /home/[Nutzername]/.redis/sock
-   # der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
+    socket: /home/[Nutzername]/.redis/sock
+    # der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
 ```
 
 **Für die gitlab_url mit https muss der komplette Pfad inklusive Server und .uberspace.de angegeben werden, damit das Zertifikat auch passt. Auch wenn ihr eine eigene Domain haben solltet!**
@@ -146,7 +146,7 @@ git:
     bin_path: /home/[Nutzername]/.toast/armed/bin/git
 ```
 
-**Der `git_path` sollte stimmen wenn git per toast installiert wurde. Sicherheitshalber per `which git`den Pfad auf seine Richtigkeit überprüfen**
+**Der `git_path` sollte stimmen wenn git per Toast installiert wurde. Trotzdem sicherheitshalber per `which git` den Pfad auf seine Richtigkeit überprüfen!**
 
 
 ### unicorn.rb Konfiguration
@@ -158,7 +158,9 @@ alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 
 **Diesen Port am besten merken oder irgendwo notieren. Wir brauche ihn später nochmal!**
 
-> Um Verwirrungen vorzubeugen. Laut [Uberspace-Wiki](https://wiki.uberspace.de/system:ports) sind Ports nur im Bereich von 61000 bis 65535 erlaubt. Dies bezieht sich aber nur auf Ports, die wir später nach Außen auf dem Server öffnen wollen!
+> **Um Verwirrungen vorzubeugen:** 
+
+> Laut [Uberspace-Wiki](https://wiki.uberspace.de/system:ports) sind Ports nur im Bereich von 61000 bis 65535 erlaubt. Dies bezieht sich aber nur auf Ports, die wir später nach Außen auf dem Server öffnen wollen!
 > Wir hingegen wollen den Port aber nur intern nutzen, um [später](#apache-redirect) den Webserver per .htaccess vom externen Port 80 auf unseren lokalen Port weiterzuleiten.
 > Es empfiehlt sich also vermutlich ein Port irgendwo zwischen 1024 und 61000 zu nehmen. Eventuell aufpassen, dass man nicht gerade einen von den [well-known Ports](https://de.wikipedia.org/wiki/Liste_der_standardisierten_Ports) erwischt.
 
@@ -203,9 +205,16 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 ```bash
     bundle exec rake gitlab:setup RAILS_ENV=production
 
-    # Type 'yes' to create the database.
-    # When done you see 'Administrator account created:'
+    # Tipp 'yes' zum erstellen der Datenbank
+    # Wenn ihr fertig seid, sollte sowas kommen:
+    Administrator account created:
+
+    login.........admin@local.host
+    password......5iveL!fe
+    
 ```
+
+**Den Benutzernamen und das Passwort brauchen wir später für den erstmaligen Login noch!**
 
 
 ## Init Script
