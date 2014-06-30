@@ -12,7 +12,7 @@ Python wird in einer Version 2.5+ (nicht 3.0+) benötigt.
 Python ist auf den Uberspace-Servern bereits aktiviert. Jedoch manchmal noch in der Version 2.4. Prüft das mit dem Befehl `python -V`. Falls noch die alte Version aktiv ist, könnt ihr nach der Anleitung [hier](https://wiki.uberspace.de/development:python) eine neuere aktivieren.
 
 
-### Git 
+### Git
 
 Git wird in der Version 1.7.10+ benötigt. *Nicht zu verwechseln mit 1.7.1!*
 
@@ -68,16 +68,16 @@ Außerdem sind folgende Änderungen durchzuführen:
 ```ruby
     user: [Nutzername]
     gitlab_url: "https://[Nutzername].[Host].uberspace.de"
- 
+
     #[...]Redis Einstellungen
-   
+
     bin: /usr/local/bin/redis-cli
     # Der Pfad sollte identisch mit der Ausgabe von 'which redis-cli' sein
-   
+
     # auskommentieren:
     # host: ...
     # port: ...
-   
+
     socket: /home/[Nutzername]/.redis/sock
     # der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
 ```
@@ -97,28 +97,28 @@ Nachdem die Konfigurationdatei geändert ist.
     cd ~
     git clone https://github.com/gitlabhq/gitlabhq.git -b 7-0-stable gitlab
     cd gitlab
-    
+
     # Clone a few config
     cp config/gitlab.yml.example config/gitlab.yml
     cp config/unicorn.rb.example config/unicorn.rb
     cp config/resque.yml.example config/resque.yml
     cp config/database.yml.mysql config/database.yml
-    
+
     cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb #No need to edit this later
-    
+
     #Make a few Direktories and make sure the chmod is right
     mkdir /home/[Nutzername]/gitlab-satellites
     mkdir tmp/pids/
     mkdir tmp/sockets/
     mkdir public/uploads
-    
+
     chmod -R u+rwX  log/
     chmod -R u+rwX  tmp/
     chmod -R u+rwX  tmp/pids/
     chmod -R u+rwX  tmp/sockets/
     chmod -R u+rwX  public/uploads
     chmod o-rwx config/database.yml
-    
+
     #Muss nicht aber ist nützlich
     git config --global user.name "GitLab"
     git config --global user.email "gitlab@localhost"
@@ -158,7 +158,7 @@ alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 
 **Diesen Port am besten merken oder irgendwo notieren. Wir brauche ihn später nochmal!**
 
-> **Um Verwirrungen vorzubeugen:** 
+> **Um Verwirrungen vorzubeugen:**
 
 > Laut [Uberspace-Wiki](https://wiki.uberspace.de/system:ports) sind Ports nur im Bereich von 61000 bis 65535 erlaubt. Dies bezieht sich aber nur auf Ports, die wir später nach Außen auf dem Server öffnen wollen!
 > Wir hingegen wollen den Port aber nur intern nutzen, um [später](#apache-redirect) den Webserver per .htaccess vom externen Port 80 auf unseren lokalen Port weiterzuleiten.
@@ -174,7 +174,7 @@ Socket ändern, falls er bei der GitLab Shell schon anders war.
 
 ### database.yml Konfiguration
 
-Unter `production: ` die MySQL Nutzerdaten eintragen: 
+Unter `production: ` die MySQL Nutzerdaten eintragen:
 
 ```ruby
 database: [Datenbank]
@@ -192,7 +192,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 ```bash
     config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
     config.serve_static_assets = true
-```  
+```
 
 
 ## Install Bundle Gems
@@ -200,7 +200,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 `bundle install --deployment --without development test postgres aws`
 
 
-## Init Database 
+## Init Database
 
 ```bash
     bundle exec rake gitlab:setup RAILS_ENV=production
@@ -211,7 +211,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
     login.........admin@local.host
     password......5iveL!fe
-    
+
 ```
 
 **Den Benutzernamen und das Passwort brauchen wir später für den erstmaligen Login noch!**
@@ -219,7 +219,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 ## Init Script
 
-GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace nicht möglich. Bisher läuft mein GitLab nur über manuelles starten. 
+GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace nicht möglich. Bisher läuft mein GitLab nur über manuelles starten.
 
 `nano lib/support/init.d/gitlab`
 
@@ -255,7 +255,7 @@ Die letzte Zeile dabei sollte den Fehler "Can't verify CSRF token authenticity" 
     bundle exec rake gitlab:env:info RAILS_ENV=production
 
     bundle exec rake gitlab:check RAILS_ENV=production
-    
+
 ```
 
 Falls alles passt, bis auf das nicht kopierte init.d script, dann ..
@@ -278,8 +278,6 @@ Im Grunde genommen gibt es dafür zwei Mögliche Lösungen. Beide haben den Vort
 
 ### Separates Keypaar
 
-> Leider habe ich selber es bisher nicht geschafft eine Verbindung mit dieser Methode unter Macintosh (10.9) zum laufen zu bringen. Unter Linux funktioniert alles. Gitlab-Shell block den Zugriff, trotz zusätzlichem Key. Wenn jemand eine Idee oder Lösung hat, wäre ich für Tipps sehr dankbar!
-
 Ihr legt euch ein separates Key-Paar für den Shellzugriff an.
 
 ```bash
@@ -295,8 +293,9 @@ Anschließend müsst ihr allerdings beim Login noch deutlich machen, mit welchem
 ```bash
    Host Servername.ShellKey
    HostName [Host]
-   IdentityFile ~/.ssh/shellAccess
    User [Nutzername]
+   IdentityFile ~/.ssh/shellAccess
+   IdentitiesOnly yes
 ```
 
 Nun sollten wir uns direkt mit `ssh Servername.ShellKey` einloggen können!
@@ -323,11 +322,15 @@ Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die sshco
 ```bash
    Host Servername.NoKey
    HostName [Nutzername].[Host].uberspace.de
-   PubkeyAuthentication no
    User [Nutzername]
+   PubkeyAuthentication no
 ```
 
 Der Befehl zum Verbinden lautet nun `ssh Servername.NoKey`.
+
+### Eindeutige Logins durch Subdomains ###
+
+following soon
 
 
 ### ControlMaster
@@ -349,7 +352,7 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
     ./gitlab/lib/support/init.d/gitlab stop
     ruby script/upgrade.rb
 ```
-     
+
 Änderungen im Startup-Skript und production.rb müssen erneut gesetzt werden.
 
 `nano lib/support/init.d/gitlab` [siehe auch](#init-script)
@@ -392,17 +395,17 @@ Kurz: Backup. Gitlab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten 
    cd gitlab
    bundle exec rake gitlab:backup:create RAILS_ENV=production
    ./gitlab/lib/support/init.d/gitlab stop
-   
+
    git fetch --all
    git checkout 7-0-stable
-   
+
    bundle install --without development test postgres aws --deployment
    bundle exec rake db:migrate RAILS_ENV=production
    bundle exec rake assets:clean assets:precompile cache:clear RAILS_ENV=production
-   
+
    nano lib/support/init.d/gitlab
    nano config/environments/production.rb
-   
+
    ./gitlab/lib/support/init.d/gitlab start
 ```
 
