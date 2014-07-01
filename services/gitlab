@@ -1,0 +1,37 @@
+#!/bin/bash
+########################################################################
+#
+# 2014-06-27
+# Gabriel Bretschner
+# info@kanedo.net
+#
+########################################################################
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+#
+# Uberspace Service-Script to start gitlaband redis with daemontools
+# in order to start redis use the global service script
+# for more information see https://uberspace.de/dokuwiki/database:redis#einrichtung
+#
+########################################################################
+
+#
+# path to gitlab installation
+# 
+GITLAB_PATH=$HOME/gitlab
+
+cd $GITLAB_PATH
+bundle exec unicorn_rails -c "$GITLAB_PATH/config/unicorn.rb" -E "production"

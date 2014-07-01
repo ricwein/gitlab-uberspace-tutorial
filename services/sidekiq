@@ -1,0 +1,36 @@
+#!/bin/sh
+########################################################################
+#
+# 2014-06-27
+# Gabriel Bretschner
+# info@kanedo.net
+#
+########################################################################
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+#
+# Uberspace Service-Script to start sidekiq with daemontools
+#
+########################################################################
+
+app_root="$HOME/gitlab"
+RAILS_ENV="production"
+sidekiq_pidfile="$app_root/tmp/pids/sidekiq.pid"
+sidekiq_logfile="$app_root/log/sidekiq.log"
+
+cd $app_root
+# Now let's go!
+bundle exec sidekiq -q post_receive -q mailer -q system_hook -q project_web_hook -q gitlab_shell -q common -q default -e $RAILS_ENV -P $sidekiq_pidfile $@ >> $sidekiq_logfile 2>&1
