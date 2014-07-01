@@ -3,7 +3,7 @@
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
 
 
-## Dependencies
+## Abhängigkeiten
 
 ### Python
 
@@ -134,7 +134,7 @@ Nachdem die Konfigurationdatei geändert ist.
     host: [Nutzername].[Host].uberspace.de
     https: true
     [...]
-    user: [Nutzername] #muss auskommentiert werden
+    user: [Nutzername] # Auskommentierung muss entfernt werden ("#" am Anfang der Zeile entfernen)!
 ```
 
 Unter 3: Advanced Settings:
@@ -197,7 +197,17 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 ## Install Bundle Gems
 
-`bundle install --deployment --without development test postgres aws`
+**Achtung:** [Gabriel Bretschner](https://blog.kanedo.net/1925,gitlab-7-0-auf-einem-uberspace-installieren.html) Hat darauf hingewiesen, dass es auf Servern unter CentOS 5 zu Problemen mit *Charlock Holmes* kommen kann. Die Lösung ist recht einfach und stammt aus dem [Uberspace-Wiki](https://wiki.uberspace.de/development:ruby#charlock_holmes):
+
+```bash
+   bundle config build.charlock_holmes --with-icu-dir=/package/host/localhost/icu4c
+```
+
+**Install:**
+
+```bash
+   bundle install --deployment --without development test postgres aws
+```
 
 
 ## Init Database
@@ -219,7 +229,9 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 ## Init Script
 
-GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace nicht möglich. Bisher läuft mein GitLab nur über manuelles starten.
+GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace **so** nicht möglich. Es gibt zwei mehr oder wenig schöne Möglichkeiten GitLab zu starten.
+
+### GitLab manuell starten
 
 `nano lib/support/init.d/gitlab`
 
@@ -229,6 +241,23 @@ Danach den Dienst starten. Mit Status ein paar mal zur Sicherheit überprüfen. 
 
 `lib/support/init.d/gitlab {start|restart|stop|status}`
 
+### GitLab als Ubersapce-Service verwalten ###
+
+Gabriel Bretschner hat die ultimative Lösung für Uberspace parat!
+In seinem [Blogeintrag](https://blog.kanedo.net/1925,gitlab-7-0-auf-einem-uberspace-installieren.html) erklärt er, wie sich Gitlab als Service verwalten lässt.
+
+Eine kuze Anleitung und die Service-Skripte findet ihr in seiner eigenen [Gitlab-Installation](https://git.kanedo.net/kanedo/gitlab-uberspace/tree/master/services)
+
+... und als Kopie auch nochmal bei mir:
+- [Anleitung](services/Readme.md)
+- [sidekiq-Service](services/sidekiq)
+- [gitlab-Service](services/gitlab)
+
+Diese Methode bringt viele Vorteile im Vergleich zum manuelle Start!
+- Das Init-Skript muss nicht angepasst werden (auch nicht nach Updates!)
+- Gitlab startet auch nach einem Server-Neustart automatisch wieder mit
+- Gitlab wird nicht nur gestartet, sondern auch überwacht
+- siehe auch [Ubersapce-Wiki: daemontools](https://wiki.uberspace.de/system:daemontools)
 
 ## Apache Redirect
 
@@ -300,6 +329,8 @@ Anschließend müsst ihr allerdings beim Login noch deutlich machen, mit welchem
 
 Nun sollten wir uns direkt mit `ssh Servername.ShellKey` einloggen können!
 
+Der `Host` Eintrag ist dabei als Alias zu verstehen. Ihr könnt im Prinzip benutzen, was euch gefällt.
+
 Alternativ lässt sich ssh auch zur einmaligen Nutzung ohne ssh-config überreden. Das sieht dann in etwa wie folgt aus:
 
 ```bash
@@ -309,7 +340,8 @@ Alternativ lässt sich ssh auch zur einmaligen Nutzung ohne ssh-config überrede
 
 ### per Passwort
 
-Alternative Zwei funktioniert so ähnlich, verzichtet aber auf ein weiteres Keypaar. Stattdessen loggen wir uns old-school mäßig via Passwort ein. Hierfür muss allerdings ssh konkret der Login mit einem Key verboten werden.
+Alternative Zwei funktioniert so ähnlich, verzichtet aber auf ein weiteres Keypaar. Stattdessen loggen wir uns old-school mäßig via Passwort ein.
+Hierfür muss allerdings ssh konkret der Login mit einem Key verboten werden.
 
 Das geht einmalig mit einem Konstrukt wie:
 
@@ -328,14 +360,40 @@ Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die sshco
 
 Der Befehl zum Verbinden lautet nun `ssh Servername.NoKey`.
 
-### Eindeutige Logins durch Subdomains ###
+### Eindeutige Logins durch Subdomains
 
-following soon
+Gabriel Bretschner hat vor kurzem eine super Ergänzung [veröffentlicht](https://blog.kanedo.net/1925,gitlab-7-0-auf-einem-uberspace-installieren.html).
+Er erklärt darin wie sich das Problem mit den SSH-Keys durch eine seperate Subdomain für GitLab lösen lässt.
 
+Im Grunde genommen ganz einfach. Ihr lasst Gitlab und die Gitlab-Shell in einer Subdomain laufen (zB.: git.[Nutzername].[Host].uberspace.de) und erstellt euch einen Host-*Alias* ähnlich wie im obrigem [Beispiel](#separates-keypaar).
+Natürlich müssen auch die Pfade in den *Configs* angepasst werden.
+
+Besonders wichtig sind hier `gitlab_url` in der gitlab-shell/config.yml, sowie `host` in der gitlab/config/gitlab.yml.
+
+Dann erstellt ihr euch ein neuens Keypaar und den passenden eintrag in die ssh-config.
+
+```bash
+   ssh-keygen -f ~/.ssh/shellAccess
+```
+
+```bash
+   Host git.[Nutzername].[Host].uberspace.de
+   User [Nutzername]
+   IdentityFile ~/.ssh/shellAccess
+   IdentitiesOnly yes
+```
+
+
+Einziges Problem an dieser Lösung ist die Verwendung von eigenen SSL-Zertifikaten.
+Uberspace biete selber Wildcard-Zertifikate an. Diese sind auch für alle Subdomain gültig. Für Gitlab mit https also eine feine Sache!
+
+**ABER:** Wer eine eigene Domain verwenden will hat Pech. Im Allgemeinen lässt Uberspace zwar [eigene Zertifikate](https://wiki.uberspace.de/webserver:https#nutzung_eigener_ssl-zertifikate) zu. Anbieter wie [StartCom](https://www.startssl.com/) bieten sogar einfache *Class 1* Zertifikate gratis an! Subdomains decken diese jedoch nicht ab. Entsprechende *Class 2* Zertifikate kosten bei allen Stellen etwas.
+
+> Vielleicht bringt ja das Angekündigte offzielle Tutorial von Uberspace eine Lösung!
 
 ### ControlMaster
 
-Falls Ihr für SSH einen ControlMaster verwendet, solltet ihr diesen für die entsprechenden Einträge deaktivieren, um eine Verwirrung des Shell-Logins und des Gitlab-Logins zu vermeiden!
+Falls Ihr für SSH einen [ControlMaster](https://wiki.uberspace.de/faq?s[]=controlmaster#ich_baue_viele_ssh-verbindungen_auf_und_komm_ploetzlich_nicht_mehr_rein) verwendet, solltet ihr diesen für die entsprechenden Einträge deaktivieren, um eine Verwirrung des Shell-Logins und des Gitlab-Logins zu vermeiden!
 
 Dazu einfach `ControlMaster no` noch zum Host in die sshconfig hinzufügen. Fertig!
 
@@ -448,4 +506,4 @@ Nach einem Tutorial von: [Benjamin Milde](http://kobralab.centaurus.uberspace.de
 
 Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](http://gitlab.ricwein.com/ricwein/uberspacetutorial/tree/master)
 
-Support und Feedback von: [G. Bretschner](http://kanedo.net), [C. Raunitschka](http://ch.rauni.me)
+Support und Feedback von: [Gabriel Bretschner](http://kanedo.net), [C. Raunitschka](http://ch.rauni.me)
