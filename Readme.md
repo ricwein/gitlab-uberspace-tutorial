@@ -1,4 +1,4 @@
-# Installation von Gitlab 7.0 (mit *https* - yay!)
+# Installation von GitLab 7.0 (mit *https* - yay!)
 
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
 
@@ -28,7 +28,7 @@ Installiere Redis wie [hier](https://wiki.uberspace.de/database:redis) beschrieb
 
 Ruby wird in der Version 1.9.3+ benötigt.
 
-Auf den Uberspaceservern wird standartmäßig eine ältere Version genutzt. [Hier](https://wiki.uberspace.de/development:ruby) wird erklärt wie die neueren zur Verfügung stehenden Versionen aktiviert werden.
+Auf den Uberspaceservern wird standardmäßig eine ältere Version genutzt. [Hier](https://wiki.uberspace.de/development:ruby) wird erklärt wie die neueren zur Verfügung stehenden Versionen aktiviert werden.
 
 
 #### .bashrc vs. .bash_profile
@@ -48,7 +48,7 @@ SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH 
 Auf den Uberspace Servern gibt es nicht die Möglichkeit einen extra User `git` anzulegen. Der Normale Nutzer geht auch. Jedoch muss das in fast allen Konfigurationsfiles beachtet werden.
 
 
-## Gitlab Shell
+## GitLab Shell
 
 Unten die Shellbefehle nach Anleitung.
 
@@ -183,11 +183,11 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 ```
 
 
-### "Hack a little bit" damit Gitlab sicher den Redis-Socket benutzt
+### "Hack a little bit" damit GitLab sicher den Redis-Socket benutzt
 
 `nano config/environments/production.rb`
 
-ändert `config.cache_store` und wechselt `config.serve_static_assets` von *false* auf *true*, damit Gitlab statische Files und Benutzer-Uploads laden kann!
+ändert `config.cache_store` und wechselt `config.serve_static_assets` von *false* auf *true*, damit GitLab statische Files und Benutzer-Uploads laden kann!
 
 ```bash
     config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
@@ -197,7 +197,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 ## Install Bundle Gems
 
-**Achtung:** [Gabriel Bretschner](https://blog.kanedo.net/1925,gitlab-7-0-auf-einem-uberspace-installieren.html) Hat darauf hingewiesen, dass es auf Servern unter CentOS 5 zu Problemen mit *Charlock Holmes* kommen kann. Die Lösung ist recht einfach und stammt aus dem [Uberspace-Wiki](https://wiki.uberspace.de/development:ruby#charlock_holmes):
+**Achtung:** [Gabriel Bretschner][1] Hat darauf hingewiesen, dass es auf Servern unter CentOS 5 zu Problemen mit *Charlock Holmes* kommen kann. Die Lösung ist recht einfach und stammt aus dem [Uberspace-Wiki](https://wiki.uberspace.de/development:ruby#charlock_holmes):
 
 ```bash
    bundle config build.charlock_holmes --with-icu-dir=/package/host/localhost/icu4c
@@ -229,7 +229,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 ## Init Script
 
-GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace **so** nicht möglich. Es gibt zwei mehr oder wenig schöne Möglichkeiten GitLab zu starten.
+GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace **so** nicht möglich. Es gibt **zwei** mehr oder wenig schöne Möglichkeiten GitLab zu starten:
 
 ### GitLab manuell starten
 
@@ -241,12 +241,12 @@ Danach den Dienst starten. Mit Status ein paar mal zur Sicherheit überprüfen. 
 
 `lib/support/init.d/gitlab {start|restart|stop|status}`
 
-### GitLab als Ubersapce-Service verwalten ###
+### GitLab als Uberspace-Service verwalten ###
 
 Gabriel Bretschner hat die ultimative Lösung für Uberspace parat!
-In seinem [Blogeintrag](https://blog.kanedo.net/1925,gitlab-7-0-auf-einem-uberspace-installieren.html) erklärt er, wie sich Gitlab als Service verwalten lässt.
+In seinem [Blogeintrag][1] erklärt er, wie sich GitLab als Service verwalten lässt.
 
-Eine kuze Anleitung und die Service-Skripte findet ihr in seiner eigenen [Gitlab-Installation](https://git.kanedo.net/kanedo/gitlab-uberspace/tree/master/services)
+Eine kurze Anleitung und die Service-Skripte findet ihr in seiner eigenen [GitLab-Installation](https://git.kanedo.net/kanedo/gitlab-uberspace/tree/master/services)
 
 ... und als Kopie auch nochmal bei mir:
 - [Anleitung](services/Readme.md)
@@ -255,8 +255,8 @@ Eine kuze Anleitung und die Service-Skripte findet ihr in seiner eigenen [Gitlab
 
 Diese Methode bringt viele Vorteile im Vergleich zum manuelle Start!
 - Das Init-Skript muss nicht angepasst werden (auch nicht nach Updates!)
-- Gitlab startet auch nach einem Server-Neustart automatisch wieder mit
-- Gitlab wird nicht nur gestartet, sondern auch überwacht
+- GitLab startet auch nach einem Server-Neustart automatisch wieder mit
+- GitLab wird nicht nur gestartet, sondern auch überwacht
 - siehe auch [Ubersapce-Wiki: daemontools](https://wiki.uberspace.de/system:daemontools)
 
 ## Apache Redirect
@@ -297,9 +297,9 @@ Falls alles passt, bis auf das nicht kopierte init.d script, dann ..
 Jetzt sollte erstmal alles funktionieren.
 
 
-## Gitlab-Shell und die SSH-keys
+## GitLab-Shell und die SSH-keys
 
-Ein großes Problem bei Gitlab und uberspace ist das fehlen eines separaten Users. Loggt ihr euch für gewöhnlich per Key über SSH ein, wird dies nach der Installation der Gitlab-Shell nicht mehr möglich sein. Diese blockt nämlich den Shell-Zugriff für alle auf Gitlab registrierten Keys! Trotzdem wollen wir aber gerne die Gitlab-Pfade und Nutzerrechte zum clonen, pushen etc. benutzen.
+Ein großes Problem bei GitLab und uberspace ist das fehlen eines separaten Users. Loggt ihr euch für gewöhnlich per Key über SSH ein, wird dies nach der Installation der GitLab-Shell nicht mehr möglich sein. Diese blockt nämlich den Shell-Zugriff für alle auf GitLab registrierten Keys! Trotzdem wollen wir aber gerne die GitLab-Pfade und Nutzerrechte zum clonen, pushen etc. benutzen.
 Im Grunde genommen gibt es dafür zwei Mögliche Lösungen. Beide haben den Vorteil, dass durch die Nutzung der ssh-config die angelegten Host-Aliases Systemweit zu Verfügung stehen (inklusive SFTP)!
 
 > Zur Nutzung unter Windows kann ich leider keine klare Aussage treffen. Wenn hier jemand Erfahrung hat würde ich mich sehr über Hinweise freuen.
@@ -349,7 +349,7 @@ Das geht einmalig mit einem Konstrukt wie:
    ssh -o PreferredAuthentications=keyboard-interactive -o PubkeyAuthentication=no [Nutzername]@[Host]
 ```
 
-Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die sshconfig `~/.ssh/config`.
+Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die ssh-config `~/.ssh/config`.
 
 ```bash
    Host Servername.NoKey
@@ -362,15 +362,15 @@ Der Befehl zum Verbinden lautet nun `ssh Servername.NoKey`.
 
 ### Eindeutige Logins durch Subdomains
 
-Gabriel Bretschner hat vor kurzem eine super Ergänzung [veröffentlicht](https://blog.kanedo.net/1925,gitlab-7-0-auf-einem-uberspace-installieren.html).
-Er erklärt darin wie sich das Problem mit den SSH-Keys durch eine seperate Subdomain für GitLab lösen lässt.
+Gabriel Bretschner hat vor kurzem eine super Ergänzung [veröffentlicht][1].
+Er erklärt darin wie sich das Problem mit den SSH-Keys durch eine separate Subdomain für GitLab lösen lässt.
 
-Im Grunde genommen ganz einfach. Ihr lasst Gitlab und die Gitlab-Shell in einer Subdomain laufen (zB.: git.[Nutzername].[Host].uberspace.de) und erstellt euch einen Host-*Alias* ähnlich wie im obrigem [Beispiel](#separates-keypaar).
+Im Grunde genommen ganz einfach. Ihr lasst GitLab und die GitLab-Shell in einer Subdomain laufen (zB.: git.[Nutzername].[Host].uberspace.de) und erstellt euch einen Host-*Alias* ähnlich wie im obigem [Beispiel](#separates-keypaar).
 Natürlich müssen auch die Pfade in den *Configs* angepasst werden.
 
 Besonders wichtig sind hier `gitlab_url` in der gitlab-shell/config.yml, sowie `host` in der gitlab/config/gitlab.yml.
 
-Dann erstellt ihr euch ein neuens Keypaar und den passenden eintrag in die ssh-config.
+Dann erstellt ihr euch ein neues Keypaar und den passenden Eintrag in die ssh-config.
 
 ```bash
    ssh-keygen -f ~/.ssh/shellAccess
@@ -385,22 +385,22 @@ Dann erstellt ihr euch ein neuens Keypaar und den passenden eintrag in die ssh-c
 
 
 Einziges Problem an dieser Lösung ist die Verwendung von eigenen SSL-Zertifikaten.
-Uberspace biete selber Wildcard-Zertifikate an. Diese sind auch für alle Subdomain gültig. Für Gitlab mit https also eine feine Sache!
+Uberspace biete selber Wildcard-Zertifikate an. Diese sind auch für alle Subdomain gültig. Für GitLab mit https also eine feine Sache!
 
 **ABER:** Wer eine eigene Domain verwenden will hat Pech. Im Allgemeinen lässt Uberspace zwar [eigene Zertifikate](https://wiki.uberspace.de/webserver:https#nutzung_eigener_ssl-zertifikate) zu. Anbieter wie [StartCom](https://www.startssl.com/) bieten sogar einfache *Class 1* Zertifikate gratis an! Subdomains decken diese jedoch nicht ab. Entsprechende *Class 2* Zertifikate kosten bei allen Stellen etwas.
 
-> Vielleicht bringt ja das Angekündigte offzielle Tutorial von Uberspace eine Lösung!
+> Vielleicht bringt ja das Angekündigte offizielle Tutorial von Uberspace eine Lösung!
 
 ### ControlMaster
 
-Falls Ihr für SSH einen [ControlMaster](https://wiki.uberspace.de/faq?s[]=controlmaster#ich_baue_viele_ssh-verbindungen_auf_und_komm_ploetzlich_nicht_mehr_rein) verwendet, solltet ihr diesen für die entsprechenden Einträge deaktivieren, um eine Verwirrung des Shell-Logins und des Gitlab-Logins zu vermeiden!
+Falls Ihr für SSH einen [ControlMaster](https://wiki.uberspace.de/faq?s[]=controlmaster#ich_baue_viele_ssh-verbindungen_auf_und_komm_ploetzlich_nicht_mehr_rein) verwendet, solltet ihr diesen für die entsprechenden Einträge deaktivieren, um eine Verwirrung des Shell-Logins und des GitLab-Logins zu vermeiden!
 
-Dazu einfach `ControlMaster no` noch zum Host in die sshconfig hinzufügen. Fertig!
+Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fertig!
 
 
 ## Upgraden
 
-### Gitlab
+### GitLab
 
 Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess stoppen und das Upgrade-Skript durchlaufen lassen.
 
@@ -426,7 +426,7 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
     config.serve_static_assets = true
 ```
 
-Falls alles erfolgreich verlief kann Gitlab nun wieder gestartet werden.
+Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 
 ```bash
     ./gitlab/lib/support/init.d/gitlab start
@@ -435,9 +435,9 @@ Falls alles erfolgreich verlief kann Gitlab nun wieder gestartet werden.
 
 ## Upgraden von 6.x auf 7.0
 
-Das Upgrade-Skript hat bei mir das Update auf 7.0 leider nicht erkannt, weswegen ich per Hand Gitlab geupdatet habe.
+Das Upgrade-Skript hat bei mir das Update auf 7.0 leider nicht erkannt, weswegen ich per Hand GitLab geupdatet habe.
 
-Die Gitlab-Shell ist der einfachste Part:
+Die GitLab-Shell ist der einfachste Part:
 
 ```bash
    cd gitlab-shell
@@ -445,9 +445,9 @@ Die Gitlab-Shell ist der einfachste Part:
    git checkout v1.9.6
 ```
 
-Nun folgt Gitlab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
+Nun folgt GitLab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
 
-Kurz: Backup. Gitlab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten migrieren. Assets kompilieren und aufräumen. *"Hacks"* wiederherstellen. Gitlab starten.
+Kurz: Backup. GitLab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten migrieren. Assets kompilieren und aufräumen. *"Hacks"* wiederherstellen. GitLab starten.
 
 ```bash
    cd gitlab
@@ -491,13 +491,13 @@ Nach dem Start schadet ein erneuter Check nicht:
 
 ***generic Helper Error***
 
-Nach dem Update spuckt Gitlab bei mir leider beim Check und anderen bundle-task öfter den folgenden Fehler aus.
+Nach dem Update spuckt GitLab bei mir leider beim Check und anderen bundle-task öfter den folgenden Fehler aus.
 
 ```bash
    Instance method "lock!" is already defined in ActiveRecord::Base, use generic helper instead or set StateMachine::Machine.ignore_method_conflicts = true.
 ```
 
-Ich weiß nicht genau was die Ursache hierfür ist, auf den Arbeitsablauf von Gitlab wirkt sich der Fehler jedoch nicht aus.
+Ich weiß nicht genau was die Ursache hierfür ist, auf den Arbeitsablauf von GitLab wirkt sich der Fehler jedoch nicht aus.
 
 
 ## Impressum
@@ -507,3 +507,5 @@ Nach einem Tutorial von: [Benjamin Milde](http://kobralab.centaurus.uberspace.de
 Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](http://gitlab.ricwein.com/ricwein/uberspacetutorial/tree/master)
 
 Support und Feedback von: [Gabriel Bretschner](http://kanedo.net), [C. Raunitschka](http://ch.rauni.me)
+
+[1]: https://blog.kanedo.net/1925,gitlab-7-0-auf-einem-uberspace-installieren.html
