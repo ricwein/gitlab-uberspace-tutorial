@@ -263,13 +263,18 @@ Diese Methode bringt viele Vorteile im Vergleich zum manuelle Start!
 
 In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit füllen
 
-```bash
-    <IfModule mod_rewrite.c>
-        RewriteEngine On
-        RewriteBase /
-        RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
-    </IfModule>
-    RequestHeader set X-Forwarded-Proto https
+```htaccess
+   <IfModule mod_rewrite.c>
+      RewriteEngine On
+      RewriteBase /
+      RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
+   </IfModule>
+
+   RequestHeader set X-Forwarded-Proto https
+
+   <IfModule mod_deflate.c>
+      AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript
+   </IfModule>
 ```
 
 > siehe Beispiel-.htaccess: [.htaccess](_.htaccess)
