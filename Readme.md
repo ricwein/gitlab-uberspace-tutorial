@@ -281,7 +281,7 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
 
 Die Zeile mit `RequestHeader` behebt den Fehler "Can't verify CSRF token authenticity" beim Login mit https.
 
-`mod_deflate` ist hier eher optional. Es aktiviert *gzip* für die http-Datenübertragung, was das Laden der Website beschleunigt.
+`mod_deflate` ist hier eher optional. Es aktiviert *gzip* für die http-Datenübertragung, was das Laden der Website beschleunigen kann.
 
 
 ## Check Status
