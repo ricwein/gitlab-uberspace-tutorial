@@ -504,8 +504,8 @@ Ich weiß nicht genau was die Ursache hierfür ist, auf den Arbeitsablauf von Gi
 
 Nach einem Tutorial von: [Benjamin Milde](http://kobralab.centaurus.uberspace.de/benni/uberspace/blob/master/install.md)
 
-Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](http://gitlab.ricwein.com/ricwein/uberspacetutorial/tree/master)
+Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](Readme.md)
 
-Support und Feedback von: [Gabriel Bretschner](http://kanedo.net), [C. Raunitschka](http://ch.rauni.me)
+Support und Feedback von: [Gabriel Bretschner](http://kanedo.net), [Christian Raunitschka](http://ch.rauni.me)
 
 [1]: https://blog.kanedo.net/1925,gitlab-7-0-auf-einem-uberspace-installieren.html
