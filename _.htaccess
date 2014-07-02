@@ -1,6 +1,11 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteBase /
-	RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
+	RewriteRule ^(.*)$ http://127.0.0.1:62091/$1 [P]
 </IfModule>
+
 RequestHeader set X-Forwarded-Proto https
+
+<ifmodule mod_deflate.c>
+	AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript
+</ifmodule>
