@@ -371,7 +371,8 @@ Er erklärt darin wie sich das Problem mit den SSH-Keys durch eine separate Subd
 Im Grunde genommen ganz einfach. Ihr lasst GitLab und die GitLab-Shell in einer Subdomain laufen (zB.: git.[Nutzername].[Host].uberspace.de) und erstellt euch einen Host-*Alias* ähnlich wie im obigem [Beispiel](#separates-keypaar).
 Natürlich müssen auch die Pfade in den *Configs* angepasst werden.
 
-Besonders wichtig sind hier `gitlab_url` in der gitlab-shell/config.yml, sowie `host` in der gitlab/config/gitlab.yml.
+Besonders wichtig sind hier `gitlab_url` in der *gitlab-shell/config.yml*, sowie `host` in der *gitlab/config/gitlab.yml*.
+Damit anschließend die Pfade für SSH noch stimmen sollte auch der Eintrag `ssh_host` in der *gitlab.yml* ergänzt werden ([siehe](#gitlab-yml-konfiguration)).
 
 Dann erstellt ihr euch ein neues Keypaar und den passenden Eintrag in die ssh-config.
 
@@ -389,7 +390,7 @@ Dann erstellt ihr euch ein neues Keypaar und den passenden Eintrag in die ssh-co
 
 > **Einziges Problem** an dieser Lösung sind die SSL-Zertifikate.
 Uberspace biete selber zwar Wildcard-Zertifikate an, diese sind aber natürlich nicht für eigene Domains oder Sub-Subdomains der User gültig.
-> Im Allgemeinen lässt Uberspace zwar [eigene Zertifikate](https://wiki.uberspace.de/webserver:https#nutzung_eigener_ssl-zertifikate) zu. Anbieter wie [StartCom](https://www.startssl.com/) bieten sogar einfache *Class 1* Zertifikate gratis an! Subdomains decken diese jedoch nicht ab (**`Ausnahme`**: StartSSL Class 1 beinhaltet eine Subdomain!) . Entsprechende *Class 2* Zertifikate kosten bei allen Stellen etwas.
+> Im Allgemeinen lässt Uberspace zwar [eigene Zertifikate](https://wiki.uberspace.de/webserver:https#nutzung_eigener_ssl-zertifikate) zu. Anbieter wie [StartCom](https://www.startssl.com/) bieten sogar einfache *Class 1* Zertifikate gratis an! Subdomains decken diese jedoch nicht ab (**Ausnahme**: StartSSL Class 1 beinhaltet eine Subdomain!) . Entsprechende *Class 2* Zertifikate kosten bei allen Stellen etwas.
 
 ### ControlMaster
 
