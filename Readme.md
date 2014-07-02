@@ -137,6 +137,9 @@ Nachdem die Konfigurationdatei geändert ist.
     user: [Nutzername] # Auskommentierung muss entfernt werden ("#" am Anfang der Zeile entfernen)!
 ```
 
+**Interessant** für alle, die Gitlab in einer Subdomain (zB. für die [SSH-Keys](#eindeutige-logins-durch-subdomains)) oder in einem Unterordner verwenden wollen:
+Mit dem Eintrag `ssh_host` lässt sich für SSH ein anderer Host angeben, als für http (`host`).
+
 Unter 3: Advanced Settings:
 
 alle `/home/git/...` ändern in `/home/[Nutzername]/...`
@@ -216,7 +219,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
     bundle exec rake gitlab:setup RAILS_ENV=production
 
     # Tipp 'yes' zum erstellen der Datenbank
-    # Wenn ihr fertig seid, sollte sowas kommen:
+    # Wenn ihr fertig seid, sollte so etwas kommen:
     Administrator account created:
 
     login.........admin@local.host
@@ -384,12 +387,9 @@ Dann erstellt ihr euch ein neues Keypaar und den passenden Eintrag in die ssh-co
 ```
 
 
-Einziges Problem an dieser Lösung ist die Verwendung von eigenen SSL-Zertifikaten.
-Uberspace biete selber Wildcard-Zertifikate an. Diese sind auch für alle Subdomain gültig. Für GitLab mit https also eine feine Sache!
-
-**ABER:** Wer eine eigene Domain verwenden will hat Pech. Im Allgemeinen lässt Uberspace zwar [eigene Zertifikate](https://wiki.uberspace.de/webserver:https#nutzung_eigener_ssl-zertifikate) zu. Anbieter wie [StartCom](https://www.startssl.com/) bieten sogar einfache *Class 1* Zertifikate gratis an! Subdomains decken diese jedoch nicht ab. Entsprechende *Class 2* Zertifikate kosten bei allen Stellen etwas.
-
-> Vielleicht bringt ja das Angekündigte offizielle Tutorial von Uberspace eine Lösung!
+> **Einziges Problem** an dieser Lösung sind die SSL-Zertifikate.
+Uberspace biete selber zwar Wildcard-Zertifikate an, diese sind aber natürlich nicht für eigene Domains oder Sub-Subdomains der User gültig.
+> Im Allgemeinen lässt Uberspace zwar [eigene Zertifikate](https://wiki.uberspace.de/webserver:https#nutzung_eigener_ssl-zertifikate) zu. Anbieter wie [StartCom](https://www.startssl.com/) bieten sogar einfache *Class 1* Zertifikate gratis an! Subdomains decken diese jedoch nicht ab (**`Ausnahme`**: StartSSL Class 1 beinhaltet eine Subdomain!) . Entsprechende *Class 2* Zertifikate kosten bei allen Stellen etwas.
 
 ### ControlMaster
 
@@ -506,6 +506,6 @@ Nach einem Tutorial von: [Benjamin Milde](http://kobralab.centaurus.uberspace.de
 
 Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](Readme.md)
 
-Support und Feedback von: [Gabriel Bretschner](http://kanedo.net), [Christian Raunitschka](http://ch.rauni.me)
+Support und Feedback von: [Gabriel Bretschner](http://kanedo.net), [Christian Raunitschka](http://ch.rauni.me), [Jan Beck](http://jancbeck.com)
 
 [1]: https://blog.kanedo.net/1925,gitlab-7-0-auf-einem-uberspace-installieren.html
