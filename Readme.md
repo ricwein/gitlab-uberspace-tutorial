@@ -271,18 +271,11 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
    </IfModule>
 
    RequestHeader set X-Forwarded-Proto https
-
-   <IfModule mod_deflate.c>
-      AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript
-   </IfModule>
 ```
 
 > siehe Beispiel-.htaccess: [.htaccess](_.htaccess)
 
 Die Zeile mit `RequestHeader` behebt den Fehler "Can't verify CSRF token authenticity" beim Login mit https.
-
-`mod_deflate` ist hier eher optional. Es aktiviert *gzip* für die http-Datenübertragung, was das Laden der Website beschleunigen kann.
-
 
 ## Check Status
 
