@@ -320,7 +320,7 @@ und kopiert den Inhalt des Public-Keys (`.pub`) in die `~/.ssh/authorized_keys` 
 
 Anschließend müsst ihr allerdings beim Login noch deutlich machen, mit welchem Keypaar ihr euch einloggen wollt. Das geht am Besten, indem ihr euch in eure `~/.ssh/config` einen Host-*Alias* anlegt, der dann in etwa wie folgt aussehen sollte:
 
-```ini
+```apache
    Host Servername.ShellKey
    HostName [Host]
    User [Nutzername]
@@ -352,7 +352,7 @@ Das geht einmalig mit einem Konstrukt wie:
 
 Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die ssh-config `~/.ssh/config`.
 
-```ini
+```apache
    Host Servername.NoKey
    HostName [Nutzername].[Host].uberspace.de
    User [Nutzername]
@@ -378,7 +378,7 @@ Dann erstellt ihr euch ein neues Keypaar und den passenden Eintrag in die ssh-co
    ssh-keygen -f ~/.ssh/shellAccess
 ```
 
-```ini
+```apache
    Host git.[Nutzername].[Host].uberspace.de
    User [Nutzername]
    IdentityFile ~/.ssh/shellAccess
@@ -398,6 +398,16 @@ Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fer
 
 
 ## Upgraden
+
+### Gitlab-Shell
+
+Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 1.9.6:
+
+```bash
+   cd gitlab-shell
+   git fetch
+   git checkout v1.9.6
+```
 
 ### GitLab
 
@@ -433,7 +443,6 @@ Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 	# oder: svc -u ~/service/gitlab
 ```
 
-
 ## Upgraden von 6.x auf 7.0
 
 Das Upgrade-Skript hat bei mir das Update auf 7.0 leider nicht erkannt, weswegen ich per Hand GitLab geupdatet habe.
@@ -442,7 +451,7 @@ Die GitLab-Shell ist der einfachste Part:
 
 ```bash
    cd gitlab-shell
-   git pull
+   git fetch
    git checkout v1.9.6
 ```
 
