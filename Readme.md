@@ -114,8 +114,6 @@ Nachdem die Konfigurationdatei geändert ist.
 
     chmod -R u+rwX  log/
     chmod -R u+rwX  tmp/
-    chmod -R u+rwX  tmp/pids/
-    chmod -R u+rwX  tmp/sockets/
     chmod -R u+rwX  public/uploads
     chmod o-rwx config/database.yml
 
@@ -192,7 +190,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 
 ändert `config.cache_store` und wechselt `config.serve_static_assets` von *false* auf *true*, damit GitLab statische Files und Benutzer-Uploads laden kann!
 
-```bash
+```ruby
     config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
     config.serve_static_assets = true
 ```
@@ -322,7 +320,7 @@ und kopiert den Inhalt des Public-Keys (`.pub`) in die `~/.ssh/authorized_keys` 
 
 Anschließend müsst ihr allerdings beim Login noch deutlich machen, mit welchem Keypaar ihr euch einloggen wollt. Das geht am Besten, indem ihr euch in eure `~/.ssh/config` einen Host-*Alias* anlegt, der dann in etwa wie folgt aussehen sollte:
 
-```bash
+```ini
    Host Servername.ShellKey
    HostName [Host]
    User [Nutzername]
@@ -354,7 +352,7 @@ Das geht einmalig mit einem Konstrukt wie:
 
 Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die ssh-config `~/.ssh/config`.
 
-```bash
+```ini
    Host Servername.NoKey
    HostName [Nutzername].[Host].uberspace.de
    User [Nutzername]
@@ -380,7 +378,7 @@ Dann erstellt ihr euch ein neues Keypaar und den passenden Eintrag in die ssh-co
    ssh-keygen -f ~/.ssh/shellAccess
 ```
 
-```bash
+```ini
    Host git.[Nutzername].[Host].uberspace.de
    User [Nutzername]
    IdentityFile ~/.ssh/shellAccess
@@ -408,11 +406,12 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
 ```bash
     cd gitlab
     bundle exec rake gitlab:backup:create RAILS_ENV=production
-    ./gitlab/lib/support/init.d/gitlab stop
+    ./lib/support/init.d/gitlab stop
+	# oder: svc -d ~/service/gitlab
     ruby script/upgrade.rb
 ```
 
-Änderungen im Startup-Skript und production.rb müssen erneut gesetzt werden.
+Änderungen im Startup-Skript und production.rb müssen erneut gesetzt werden, falls du GitLab manuell startest. **Wenn du die uberspace-daemontools verwendest, muss nur die production.rb bearbeitet werden!**
 
 `nano lib/support/init.d/gitlab` [siehe auch](#init-script)
 
@@ -422,7 +421,7 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
 
 `nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
 
-```bash
+```ruby
     config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
     config.serve_static_assets = true
 ```
@@ -431,6 +430,7 @@ Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 
 ```bash
     ./gitlab/lib/support/init.d/gitlab start
+	# oder: svc -u ~/service/gitlab
 ```
 
 
@@ -453,7 +453,8 @@ Kurz: Backup. GitLab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten 
 ```bash
    cd gitlab
    bundle exec rake gitlab:backup:create RAILS_ENV=production
-   ./gitlab/lib/support/init.d/gitlab stop
+   ./lib/support/init.d/gitlab stop
+   # oder: svc -d ~/service/gitlab
 
    git fetch --all
    git checkout 7-0-stable
@@ -462,13 +463,15 @@ Kurz: Backup. GitLab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten 
    bundle exec rake db:migrate RAILS_ENV=production
    bundle exec rake assets:clean assets:precompile cache:clear RAILS_ENV=production
 
+   # siehe unten:
    nano lib/support/init.d/gitlab
    nano config/environments/production.rb
 
-   ./gitlab/lib/support/init.d/gitlab start
+   ./lib/support/init.d/gitlab start
+   # oder: svc -u ~/service/gitlab
 ```
 
-wobei für unsere *"Hacks"* wieder gilt:
+wobei für unsere *"Hacks"* wieder gilt, falls wir nicht die daemontools verwenden:
 
 `nano lib/support/init.d/gitlab` [siehe auch](#init-script)
 
@@ -476,9 +479,11 @@ wobei für unsere *"Hacks"* wieder gilt:
     app_user="[Nutzername]"
 ```
 
+und auf jeden Fall:
+
 `nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
 
-```bash
+```ruby
     config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
     config.serve_static_assets = true
 ```
@@ -490,15 +495,15 @@ Nach dem Start schadet ein erneuter Check nicht:
    bundle exec rake gitlab:check RAILS_ENV=production
 ```
 
-***generic Helper Error***
+> ***generic Helper Error***
 
-Nach dem Update spuckt GitLab bei mir leider beim Check und anderen bundle-task öfter den folgenden Fehler aus.
+> Nach dem Update spuckt GitLab bei mir leider beim Check und anderen bundle-task öfter den folgenden Fehler aus.
 
 ```bash
    Instance method "lock!" is already defined in ActiveRecord::Base, use generic helper instead or set StateMachine::Machine.ignore_method_conflicts = true.
 ```
 
-Ich weiß nicht genau was die Ursache hierfür ist, auf den Arbeitsablauf von GitLab wirkt sich der Fehler jedoch nicht aus.
+> Ich weiß nicht genau was die Ursache hierfür ist, auf den Arbeitsablauf von GitLab wirkt sich der Fehler jedoch nicht aus.
 
 
 ## Impressum
