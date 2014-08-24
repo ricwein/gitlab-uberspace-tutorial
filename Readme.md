@@ -26,7 +26,7 @@ Installiere Redis wie [hier](https://wiki.uberspace.de/database:redis) beschrieb
 
 ### cmake
 
-Ab Version 7.7 benötigt Gitlab cmake. Dies ist aber auf Uberspace nicht standardmäßig vorinstalliert!
+Ab Version 7.2 benötigt Gitlab cmake. Dies ist aber auf Uberspace nicht standardmäßig vorinstalliert!
 
 Wir kompillieren uns daher cmake selber und erweitern unsere PATH Variable entsprechend:
 
