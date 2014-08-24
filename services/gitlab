@@ -1,7 +1,7 @@
 #!/bin/bash
 ########################################################################
 #
-# 2014-06-27
+# 2014-08-07
 # Gabriel Bretschner
 # info@kanedo.net
 #
@@ -28,10 +28,12 @@
 #
 ########################################################################
 
-#
-# path to gitlab installation
-# 
-GITLAB_PATH=$HOME/gitlab
+# Now let's go!
+export RAILS_ENV="production"
+export GITLAB_PATH="$HOME/gitlab"
 
-cd $GITLAB_PATH
-bundle exec unicorn_rails -c "$GITLAB_PATH/config/unicorn.rb" -E "production"
+cd $GITLAB_PATH/
+app_root=$(pwd)
+unicorn_config="$app_root/config/unicorn.rb"
+
+exec bundle exec unicorn_rails -c $unicorn_config -E $RAILS_ENV 2>&1

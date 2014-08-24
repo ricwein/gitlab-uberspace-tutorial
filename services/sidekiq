@@ -33,4 +33,4 @@ sidekiq_logfile="$app_root/log/sidekiq.log"
 
 cd $app_root
 # Now let's go!
-bundle exec sidekiq -q post_receive -q mailer -q system_hook -q project_web_hook -q gitlab_shell -q common -q default -e $RAILS_ENV -P $sidekiq_pidfile $@ >> $sidekiq_logfile 2>&1
+bundle exec sidekiq -q post_receive -q mailer -q system_hook -q project_web_hook -q gitlab_shell -q common -q default -e $RAILS_ENV -P $sidekiq_pidfile >> $sidekiq_logfile 2>&1
