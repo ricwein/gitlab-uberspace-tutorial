@@ -433,12 +433,12 @@ Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fer
 
 ### Gitlab-Shell
 
-Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 1.9.6:
+Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 1.9.7:
 
 ```bash
    cd gitlab-shell
    git fetch
-   git checkout v1.9.6
+   git checkout v1.9.7
 ```
 
 ### GitLab
@@ -449,7 +449,7 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
     cd gitlab
     bundle exec rake gitlab:backup:create RAILS_ENV=production
     ./lib/support/init.d/gitlab stop
-	# oder: svc -d ~/service/gitlab
+	# oder: svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
     ruby script/upgrade.rb
 ```
 
@@ -472,7 +472,7 @@ Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 
 ```bash
     ./gitlab/lib/support/init.d/gitlab start
-	# oder: svc -u ~/service/gitlab
+	# oder:  svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
 ```
 
 ## Upgraden von 6.x auf 7.x
@@ -487,7 +487,7 @@ Die GitLab-Shell ist der einfachste Part:
 
 Nun folgt GitLab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
 
-Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten migrieren. Assets kompilieren und aufräumen. *"Hacks"* wiederherstellen. GitLab starten.
+Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout auf 7.2. Installieren. Daten migrieren. Assets kompilieren und aufräumen. *"Hacks"* wiederherstellen. GitLab starten.
 
 *Gitlab 7-2-stable* benätigt cmake als Abhängigkeit. Details [siehe hier](#cmake)
 
@@ -550,16 +550,6 @@ Nach dem Start schadet ein erneuter Check nicht:
    bundle exec rake gitlab:env:info RAILS_ENV=production
    bundle exec rake gitlab:check RAILS_ENV=production
 ```
-
-> ***generic Helper Error***
-
-> Nach dem Update spuckt GitLab bei mir leider beim Check und anderen bundle-task öfter den folgenden Fehler aus.
-
-```bash
-   Instance method "lock!" is already defined in ActiveRecord::Base, use generic helper instead or set StateMachine::Machine.ignore_method_conflicts = true.
-```
-
-> Ich weiß nicht genau was die Ursache hierfür ist, auf den Arbeitsablauf von GitLab wirkt sich der Fehler jedoch nicht aus.
 
 
 ## Impressum
