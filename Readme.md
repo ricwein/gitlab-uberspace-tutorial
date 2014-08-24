@@ -1,4 +1,4 @@
-# Installation von GitLab 7.0 (mit *https* - yay!)
+# Installation von GitLab 7.2 (mit *https* - yay!)
 
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
 
@@ -24,6 +24,26 @@ Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eur
 Installiere Redis wie [hier](https://wiki.uberspace.de/database:redis) beschrieben. Redis akzeptiert auf Uberspace nur Verbindungen zu seinem Socket, was in allen Konfigurationsfiles von GitLab zu beachten ist.
 
 
+### cmake
+
+Ab Version 7.7 benötigt Gitlab cmake. Dies ist aber auf Uberspace nicht standardmäßig vorinstalliert!
+
+Wir kompillieren uns daher cmake selber und erweitern unsere PATH Variable entsprechend:
+
+```bash
+   mkdir ~/.bin && cd ~/.bin
+   curl -O http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz
+   tar -zxvf cmake-3.0.1.tar.gz && rm cmake-3.0.1.tar.gz && cd cmake-3.0.1
+   ./bootstrap && make
+
+   cat <<'__EOF__' >> ~/.bashrc
+   export PATH=$HOME/.bin/cmake-3.0.1/bin:$PATH
+   __EOF__
+
+   source ~/.bashrc
+```
+
+
 ### Ruby
 
 Ruby wird in der Version 1.9.3+ benötigt.
@@ -35,12 +55,24 @@ Auf den Uberspaceservern wird standardmäßig eine ältere Version genutzt. [Hie
 SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH Keys direkt auf das GL Shell Script verweisen wird `.bash_profile` nicht geladen. Deshalb müssen die `$PATH` Angaben die den neuen Rubypfad, sowie den Ruby Gem Pfad hinzufügen aus der `.bash_profile` in `.bashrc` kopiert werden.
 
 
-#### Bundler Gem
+#### Bundler Gem ####
+
 ```bash
    gem install bundler --user-install --no-ri --no-rdoc
 ```
 
 `--user-install` sorgt dafür, dass der Gem im Nutzerverzeichnis statt global installiert wird.
+
+**.gemrc**
+
+Alternativ lässt sich diese option auch dauerhaft aktivieren. Dafür einfach `gem: --user-install --no-rdoc --no-ri` in die ~/.gemrc eintragen. Falls die Datei noch nicht existiert erstellen.
+
+```bash
+   touch ~/.gemrc
+   cat <<'__EOF__' >> ~/.gemrc
+   gem: --user-install --no-rdoc --no-ri
+   __EOF__
+```
 
 
 ## System User
@@ -54,7 +86,7 @@ Unten die Shellbefehle nach Anleitung.
 
 ```bash
     cd ~
-    git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.6
+    git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.7
     cd gitlab-shell
     cp config.yml.example config.yml
     nano config.yml
@@ -95,7 +127,7 @@ Nachdem die Konfigurationdatei geändert ist.
 
 ```bash
     cd ~
-    git clone https://github.com/gitlabhq/gitlabhq.git -b 7-0-stable gitlab
+    git clone https://github.com/gitlabhq/gitlabhq.git -b 7-2-stable gitlab
     cd gitlab
 
     # Clone a few config
@@ -443,30 +475,45 @@ Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 	# oder: svc -u ~/service/gitlab
 ```
 
-## Upgraden von 6.x auf 7.0
-
-Das Upgrade-Skript hat bei mir das Update auf 7.0 leider nicht erkannt, weswegen ich per Hand GitLab geupdatet habe.
+## Upgraden von 6.x auf 7.x
 
 Die GitLab-Shell ist der einfachste Part:
 
 ```bash
    cd gitlab-shell
    git fetch
-   git checkout v1.9.6
+   git checkout v1.9.7
 ```
 
 Nun folgt GitLab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
 
-Kurz: Backup. GitLab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten migrieren. Assets kompilieren und aufräumen. *"Hacks"* wiederherstellen. GitLab starten.
+Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten migrieren. Assets kompilieren und aufräumen. *"Hacks"* wiederherstellen. GitLab starten.
+
+*Gitlab 7-2-stable* benätigt cmake als Abhängigkeit. Details [siehe hier](#cmake)
+
+```bash
+   mkdir ~/.bin && cd ~/.bin
+   curl -O http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz
+   tar -zxvf cmake-3.0.1.tar.gz && rm cmake-3.0.1.tar.gz && cd cmake-3.0.1
+   ./bootstrap && make
+
+   cat <<'__EOF__' >> ~/.bashrc
+   export PATH=$HOME/.bin/cmake-3.0.1/bin:$PATH
+   __EOF__
+
+   source ~/.bashrc
+```
+
+Nun Gitlab:
 
 ```bash
    cd gitlab
    bundle exec rake gitlab:backup:create RAILS_ENV=production
    ./lib/support/init.d/gitlab stop
-   # oder: svc -d ~/service/gitlab
+   # oder: svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
 
    git fetch --all
-   git checkout 7-0-stable
+   git checkout 7-2-stable
 
    bundle install --without development test postgres aws --deployment
    bundle exec rake db:migrate RAILS_ENV=production
@@ -477,7 +524,7 @@ Kurz: Backup. GitLab stoppen. Git pullen. Checkout auf 7.0. Installieren. Daten 
    nano config/environments/production.rb
 
    ./lib/support/init.d/gitlab start
-   # oder: svc -u ~/service/gitlab
+   # oder: svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
 ```
 
 wobei für unsere *"Hacks"* wieder gilt, falls wir nicht die daemontools verwenden:
