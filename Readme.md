@@ -28,37 +28,36 @@ Installiere Redis wie [hier](https://wiki.uberspace.de/database:redis) beschrieb
 
 Ab Version 7.2 benötigt Gitlab cmake. Dies ist aber auf Uberspace nicht standardmäßig vorinstalliert!
 
-Wir kompillieren uns daher cmake selber und erweitern unsere PATH Variable entsprechend:
+Abhilfe schaffen wir uns wieder mittels toast:
 
 ```bash
-   mkdir ~/.bin && cd ~/.bin
-   curl -O http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz
-   tar -zxvf cmake-3.0.1.tar.gz && rm cmake-3.0.1.tar.gz && cd cmake-3.0.1
-   ./bootstrap && make
-
-   cat <<'__EOF__' >> ~/.bashrc
-   export PATH=$HOME/.bin/cmake-3.0.1/bin:$PATH
-   __EOF__
-
-   source ~/.bashrc
+toast arm cmake
 ```
 
 
 ### Ruby
 
-Ruby wird in der Version 1.9.3+ benötigt.
+Ruby wird in der Version 2.0+ benötigt.
 
-Auf den Uberspaceservern wird standardmäßig eine ältere Version genutzt. [Hier](https://wiki.uberspace.de/development:ruby) wird erklärt wie die neueren zur Verfügung stehenden Versionen aktiviert werden.
+Auf den Uberspace Servern wird standardmäßig eine ältere Version genutzt. [Hier](https://wiki.uberspace.de/development:ruby) wird erklärt wie die neueren zur Verfügung stehenden Versionen aktiviert werden.
+
+```bash
+cat <<'__EOF__' >> ~/.bashrc
+export PATH=/package/host/localhost/ruby-2.1.1/bin:$PATH
+export PATH=$HOME/.gem/ruby/2.1.0/bin:$PATH
+__EOF__
+```
 
 
 #### .bashrc vs. .bash_profile
-SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH Keys direkt auf das GL Shell Script verweisen wird `.bash_profile` nicht geladen. Deshalb müssen die `$PATH` Angaben die den neuen Rubypfad, sowie den Ruby Gem Pfad hinzufügen aus der `.bash_profile` in `.bashrc` kopiert werden.
+SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH Keys direkt auf das GL Shell Script verweisen wird `.bash_profile` nicht geladen.
+Seid ihr der Anleitung auf [Uberspace](https://wiki.uberspace.de/development:ruby) gefolgt, müssen daher die `$PATH` Angaben aus der `.bash_profile` in `.bashrc` verschoben (oder kopiert) werden.
 
 
 #### Bundler Gem ####
 
 ```bash
-   gem install bundler --user-install --no-ri --no-rdoc
+gem install bundler --user-install --no-ri --no-rdoc
 ```
 
 `--user-install` sorgt dafür, dass der Gem im Nutzerverzeichnis statt global installiert wird.
@@ -68,10 +67,8 @@ SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH 
 Alternativ lässt sich diese option auch dauerhaft aktivieren. Dafür einfach `gem: --user-install --no-rdoc --no-ri` in die ~/.gemrc eintragen. Falls die Datei noch nicht existiert erstellen.
 
 ```bash
-   touch ~/.gemrc
-   cat <<'__EOF__' >> ~/.gemrc
-   gem: --user-install --no-rdoc --no-ri
-   __EOF__
+touch ~/.gemrc
+echo "gem: --user-install --no-rdoc --no-ri" > ~/.gemrc
 ```
 
 
@@ -85,11 +82,11 @@ Auf den Uberspace Servern gibt es nicht die Möglichkeit einen extra User `git` 
 Unten die Shellbefehle nach Anleitung.
 
 ```bash
-    cd ~
-    git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.7
-    cd gitlab-shell
-    cp config.yml.example config.yml
-    nano config.yml
+cd ~
+git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.7
+cd gitlab-shell
+cp config.yml.example config.yml
+nano config.yml
 ```
 Wichtig in der `config.yml`:
 
@@ -98,20 +95,20 @@ Wichtig in der `config.yml`:
 Außerdem sind folgende Änderungen durchzuführen:
 
 ```ruby
-    user: [Nutzername]
-    gitlab_url: "https://[Nutzername].[Host].uberspace.de"
+user: [Nutzername]
+gitlab_url: "https://[Nutzername].[Host].uberspace.de"
 
-    #[...]Redis Einstellungen
+#[...]Redis Einstellungen
 
-    bin: /usr/local/bin/redis-cli
-    # Der Pfad sollte identisch mit der Ausgabe von 'which redis-cli' sein
+bin: /usr/local/bin/redis-cli
+# Der Pfad sollte identisch mit der Ausgabe von 'which redis-cli' sein
 
-    # auskommentieren:
-    # host: ...
-    # port: ...
+# auskommentieren:
+# host: ...
+# port: ...
 
-    socket: /home/[Nutzername]/.redis/sock
-    # der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
+socket: /home/[Nutzername]/.redis/sock
+# der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
 ```
 
 **Für die gitlab_url mit https muss der komplette Pfad inklusive Server und .uberspace.de angegeben werden, damit das Zertifikat auch passt. Auch wenn ihr eine eigene Domain haben solltet!**
@@ -119,40 +116,40 @@ Außerdem sind folgende Änderungen durchzuführen:
 Nachdem die Konfigurationdatei geändert ist.
 
 ```bash
-    ./bin/install
+./bin/install
 ```
 
 
 ## GitLab
 
 ```bash
-    cd ~
-    git clone https://github.com/gitlabhq/gitlabhq.git -b 7-2-stable gitlab
-    cd gitlab
+cd ~
+git clone https://github.com/gitlabhq/gitlabhq.git -b 7-2-stable gitlab
+cd gitlab
 
-    # Clone a few config
-    cp config/gitlab.yml.example config/gitlab.yml
-    cp config/unicorn.rb.example config/unicorn.rb
-    cp config/resque.yml.example config/resque.yml
-    cp config/database.yml.mysql config/database.yml
+# Clone a few config
+cp config/gitlab.yml.example config/gitlab.yml
+cp config/unicorn.rb.example config/unicorn.rb
+cp config/resque.yml.example config/resque.yml
+cp config/database.yml.mysql config/database.yml
 
-    cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb #No need to edit this later
+cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb #No need to edit this later
 
-    #Make a few Direktories and make sure the chmod is right
-    mkdir /home/[Nutzername]/gitlab-satellites
-    mkdir tmp/pids/
-    mkdir tmp/sockets/
-    mkdir public/uploads
+#Make a few Direktories and make sure the chmod is right
+mkdir /home/[Nutzername]/gitlab-satellites
+mkdir tmp/pids/
+mkdir tmp/sockets/
+mkdir public/uploads
 
-    chmod -R u+rwX  log/
-    chmod -R u+rwX  tmp/
-    chmod -R u+rwX  public/uploads
-    chmod o-rwx config/database.yml
+chmod -R u+rwX  log/
+chmod -R u+rwX  tmp/
+chmod -R u+rwX  public/uploads
+chmod o-rwx config/database.yml
 
-    #Muss nicht aber ist nützlich
-    git config --global user.name "GitLab"
-    git config --global user.email "gitlab@localhost"
-    git config --global core.autocrlf input
+#Muss nicht aber ist nützlich
+git config --global user.name "GitLab"
+git config --global user.email "gitlab@localhost"
+git config --global core.autocrlf input
 ```
 
 
@@ -161,10 +158,10 @@ Nachdem die Konfigurationdatei geändert ist.
 `nano config/gitlab.yml`
 
 ```ruby
-    host: [Nutzername].[Host].uberspace.de
-    https: true
-    [...]
-    user: [Nutzername] # Auskommentierung muss entfernt werden ("#" am Anfang der Zeile entfernen)!
+host: [Nutzername].[Host].uberspace.de
+https: true
+[...]
+user: [Nutzername] # Auskommentierung muss entfernt werden ("#" am Anfang der Zeile entfernen)!
 ```
 
 **Interessant** für alle, die Gitlab in einer Subdomain (zB. für die [SSH-Keys](#eindeutige-logins-durch-subdomains)) oder in einem Unterordner verwenden wollen:
@@ -176,7 +173,7 @@ alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 
 ```ruby
 git:
-    bin_path: /home/[Nutzername]/.toast/armed/bin/git
+bin_path: /home/[Nutzername]/.toast/armed/bin/git
 ```
 
 **Der `git_path` sollte stimmen wenn git per Toast installiert wurde. Trotzdem sicherheitshalber per `which git` den Pfad auf seine Richtigkeit überprüfen!**
@@ -223,8 +220,8 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 ändert `config.cache_store` und wechselt `config.serve_static_assets` von *false* auf *true*, damit GitLab statische Files und Benutzer-Uploads laden kann!
 
 ```ruby
-    config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
-    config.serve_static_assets = true
+config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
+config.serve_static_assets = true
 ```
 
 
@@ -233,27 +230,27 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 **Achtung:** [Gabriel Bretschner][1] Hat darauf hingewiesen, dass es auf Servern unter CentOS 5 zu Problemen mit *Charlock Holmes* kommen kann. Die Lösung ist recht einfach und stammt aus dem [Uberspace-Wiki](https://wiki.uberspace.de/development:ruby#charlock_holmes):
 
 ```bash
-   bundle config build.charlock_holmes --with-icu-dir=/package/host/localhost/icu4c
+bundle config build.charlock_holmes --with-icu-dir=/package/host/localhost/icu4c
 ```
 
 **Install:**
 
 ```bash
-   bundle install --deployment --without development test postgres aws
+bundle install --deployment --without development test postgres aws
 ```
 
 
 ## Init Database
 
 ```bash
-    bundle exec rake gitlab:setup RAILS_ENV=production
+bundle exec rake gitlab:setup RAILS_ENV=production
 
-    # Tipp 'yes' zum erstellen der Datenbank
-    # Wenn ihr fertig seid, sollte so etwas kommen:
-    Administrator account created:
+# Tipp 'yes' zum erstellen der Datenbank
+# Wenn ihr fertig seid, sollte so etwas kommen:
+Administrator account created:
 
-    login.........admin@local.host
-    password......5iveL!fe
+login.........admin@local.host
+password......5iveL!fe
 
 ```
 
@@ -297,13 +294,13 @@ Diese Methode bringt viele Vorteile im Vergleich zum manuelle Start!
 In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit füllen
 
 ```htaccess
-   <IfModule mod_rewrite.c>
-      RewriteEngine On
-      RewriteBase /
-      RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
-   </IfModule>
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
+</IfModule>
 
-   RequestHeader set X-Forwarded-Proto https
+RequestHeader set X-Forwarded-Proto https
 ```
 
 > siehe Beispiel-.htaccess: [.htaccess](_.htaccess)
@@ -313,11 +310,9 @@ Die Zeile mit `RequestHeader` behebt den Fehler "Can't verify CSRF token authent
 ## Check Status
 
 ```bash
+bundle exec rake gitlab:env:info RAILS_ENV=production
 
-    bundle exec rake gitlab:env:info RAILS_ENV=production
-
-    bundle exec rake gitlab:check RAILS_ENV=production
-
+bundle exec rake gitlab:check RAILS_ENV=production
 ```
 
 Falls alles passt, bis auf das nicht kopierte init.d script, dann ..
@@ -343,9 +338,9 @@ Im Grunde genommen gibt es dafür zwei Mögliche Lösungen. Beide haben den Vort
 Ihr legt euch ein separates Key-Paar für den Shellzugriff an.
 
 ```bash
-   ssh-keygen -f ~/.ssh/shellAccess
-   # optional auch mit custom-Mail/Kommentar:
-   ssh-keygen -f ~/.ssh/shellAccess -C [aussagekrätiger-Name]@[server]
+ssh-keygen -f ~/.ssh/shellAccess
+# optional auch mit custom-Mail/Kommentar:
+ssh-keygen -f ~/.ssh/shellAccess -C [aussagekrätiger-Name]@[server]
 ```
 
 und kopiert den Inhalt des Public-Keys (`.pub`) in die `~/.ssh/authorized_keys` eures Servers.
@@ -353,11 +348,11 @@ und kopiert den Inhalt des Public-Keys (`.pub`) in die `~/.ssh/authorized_keys` 
 Anschließend müsst ihr allerdings beim Login noch deutlich machen, mit welchem Keypaar ihr euch einloggen wollt. Das geht am Besten, indem ihr euch in eure `~/.ssh/config` einen Host-*Alias* anlegt, der dann in etwa wie folgt aussehen sollte:
 
 ```apache
-   Host Servername.ShellKey
-   HostName [Host]
-   User [Nutzername]
-   IdentityFile ~/.ssh/shellAccess
-   IdentitiesOnly yes
+Host Servername.ShellKey
+HostName [Host]
+User [Nutzername]
+IdentityFile ~/.ssh/shellAccess
+IdentitiesOnly yes
 ```
 
 Nun sollten wir uns direkt mit `ssh Servername.ShellKey` einloggen können!
@@ -367,7 +362,7 @@ Der `Host` Eintrag ist dabei als Alias zu verstehen. Ihr könnt im Prinzip benut
 Alternativ lässt sich ssh auch zur einmaligen Nutzung ohne ssh-config überreden. Das sieht dann in etwa wie folgt aus:
 
 ```bash
-   ssh -i ~/.ssh/shellAccess [Nutzername]@[Host]
+ssh -i ~/.ssh/shellAccess [Nutzername]@[Host]
 ```
 
 
@@ -379,16 +374,16 @@ Hierfür muss allerdings ssh konkret der Login mit einem Key verboten werden.
 Das geht einmalig mit einem Konstrukt wie:
 
 ```bash
-   ssh -o PreferredAuthentications=keyboard-interactive -o PubkeyAuthentication=no [Nutzername]@[Host]
+ssh -o PreferredAuthentications=keyboard-interactive -o PubkeyAuthentication=no [Nutzername]@[Host]
 ```
 
 Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die ssh-config `~/.ssh/config`.
 
 ```apache
-   Host Servername.NoKey
-   HostName [Nutzername].[Host].uberspace.de
-   User [Nutzername]
-   PubkeyAuthentication no
+Host Servername.NoKey
+HostName [Nutzername].[Host].uberspace.de
+User [Nutzername]
+PubkeyAuthentication no
 ```
 
 Der Befehl zum Verbinden lautet nun `ssh Servername.NoKey`.
@@ -407,14 +402,14 @@ Damit anschließend die Pfade für SSH noch stimmen sollte auch der Eintrag `ssh
 Dann erstellt ihr euch ein neues Keypaar und den passenden Eintrag in die ssh-config.
 
 ```bash
-   ssh-keygen -f ~/.ssh/shellAccess
+ssh-keygen -f ~/.ssh/shellAccess
 ```
 
 ```apache
-   Host git.[Nutzername].[Host].uberspace.de
-   User [Nutzername]
-   IdentityFile ~/.ssh/shellAccess
-   IdentitiesOnly yes
+Host git.[Nutzername].[Host].uberspace.de
+User [Nutzername]
+IdentityFile ~/.ssh/shellAccess
+IdentitiesOnly yes
 ```
 
 
@@ -436,9 +431,9 @@ Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fer
 Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 1.9.7:
 
 ```bash
-   cd gitlab-shell
-   git fetch
-   git checkout v1.9.7
+cd gitlab-shell
+git fetch
+git checkout v1.9.7
 ```
 
 ### GitLab
@@ -446,11 +441,11 @@ Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell.
 Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess stoppen und das Upgrade-Skript durchlaufen lassen.
 
 ```bash
-    cd gitlab
-    bundle exec rake gitlab:backup:create RAILS_ENV=production
-    ./lib/support/init.d/gitlab stop
-	# oder: svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
-    ruby script/upgrade.rb
+cd gitlab
+bundle exec rake gitlab:backup:create RAILS_ENV=production
+./lib/support/init.d/gitlab stop
+# oder: svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
+ruby script/upgrade.rb
 ```
 
 Änderungen im Startup-Skript und production.rb müssen erneut gesetzt werden, falls du GitLab manuell startest. **Wenn du die uberspace-daemontools verwendest, muss nur die production.rb bearbeitet werden!**
@@ -458,20 +453,20 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
 `nano lib/support/init.d/gitlab` [siehe auch](#init-script)
 
 ```bash
-    app_user="[Nutzername]"
+app_user="[Nutzername]"
 ```
 
 `nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
 
 ```ruby
-    config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
-    config.serve_static_assets = true
+config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
+config.serve_static_assets = true
 ```
 
 Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 
 ```bash
-    ./gitlab/lib/support/init.d/gitlab start
+./gitlab/lib/support/init.d/gitlab start
 	# oder:  svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
 ```
 
@@ -480,9 +475,9 @@ Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 Die GitLab-Shell ist der einfachste Part:
 
 ```bash
-   cd gitlab-shell
-   git fetch
-   git checkout v1.9.7
+cd gitlab-shell
+git fetch
+git checkout v1.9.7
 ```
 
 Nun folgt GitLab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
@@ -492,39 +487,30 @@ Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout
 *Gitlab 7-2-stable* benätigt cmake als Abhängigkeit. Details [siehe hier](#cmake)
 
 ```bash
-   mkdir ~/.bin && cd ~/.bin
-   curl -O http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz
-   tar -zxvf cmake-3.0.1.tar.gz && rm cmake-3.0.1.tar.gz && cd cmake-3.0.1
-   ./bootstrap && make
-
-   cat <<'__EOF__' >> ~/.bashrc
-   export PATH=$HOME/.bin/cmake-3.0.1/bin:$PATH
-   __EOF__
-
-   source ~/.bashrc
+toast arm cmake
 ```
 
 Nun Gitlab:
 
 ```bash
-   cd gitlab
-   bundle exec rake gitlab:backup:create RAILS_ENV=production
-   ./lib/support/init.d/gitlab stop
-   # oder: svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
+cd gitlab
+bundle exec rake gitlab:backup:create RAILS_ENV=production
+./lib/support/init.d/gitlab stop
+# oder: svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
 
-   git fetch --all
-   git checkout 7-2-stable
+git fetch --all
+git checkout 7-2-stable
 
-   bundle install --without development test postgres aws --deployment
-   bundle exec rake db:migrate RAILS_ENV=production
-   bundle exec rake assets:clean assets:precompile cache:clear RAILS_ENV=production
+bundle install --without development test postgres aws --deployment
+bundle exec rake db:migrate RAILS_ENV=production
+bundle exec rake assets:clean assets:precompile cache:clear RAILS_ENV=production
 
-   # siehe unten:
-   nano lib/support/init.d/gitlab
-   nano config/environments/production.rb
+# siehe unten:
+nano lib/support/init.d/gitlab
+nano config/environments/production.rb
 
-   ./lib/support/init.d/gitlab start
-   # oder: svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
+./lib/support/init.d/gitlab start
+# oder: svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
 ```
 
 wobei für unsere *"Hacks"* wieder gilt, falls wir nicht die daemontools verwenden:
@@ -532,7 +518,7 @@ wobei für unsere *"Hacks"* wieder gilt, falls wir nicht die daemontools verwend
 `nano lib/support/init.d/gitlab` [siehe auch](#init-script)
 
 ```bash
-    app_user="[Nutzername]"
+app_user="[Nutzername]"
 ```
 
 und auf jeden Fall:
@@ -540,15 +526,15 @@ und auf jeden Fall:
 `nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
 
 ```ruby
-    config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
-    config.serve_static_assets = true
+config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
+config.serve_static_assets = true
 ```
 
 Nach dem Start schadet ein erneuter Check nicht:
 
 ```bash
-   bundle exec rake gitlab:env:info RAILS_ENV=production
-   bundle exec rake gitlab:check RAILS_ENV=production
+bundle exec rake gitlab:env:info RAILS_ENV=production
+bundle exec rake gitlab:check RAILS_ENV=production
 ```
 
 
