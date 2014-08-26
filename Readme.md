@@ -259,17 +259,7 @@ password......5iveL!fe
 
 ## Init Script
 
-GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace **so** nicht möglich. Es gibt **zwei** mehr oder wenig schöne Möglichkeiten GitLab zu starten:
-
-### GitLab manuell starten
-
-`nano lib/support/init.d/gitlab`
-
-Ändere `app_user="[Nutzername]"`
-
-Danach den Dienst starten. Mit Status ein paar mal zur Sicherheit überprüfen. Fehler finden sich unter `log/`.
-
-`lib/support/init.d/gitlab {start|restart|stop|status}`
+GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace **so** nicht möglich.
 
 ### GitLab als Uberspace-Service verwalten ###
 
@@ -443,18 +433,12 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
 ```bash
 cd gitlab
 bundle exec rake gitlab:backup:create RAILS_ENV=production
+svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
 ./lib/support/init.d/gitlab stop
-# oder: svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
 ruby script/upgrade.rb
 ```
 
-Änderungen im Startup-Skript und production.rb müssen erneut gesetzt werden, falls du GitLab manuell startest. **Wenn du die uberspace-daemontools verwendest, muss nur die production.rb bearbeitet werden!**
-
-`nano lib/support/init.d/gitlab` [siehe auch](#init-script)
-
-```bash
-app_user="[Nutzername]"
-```
+Änderungen in der production.rb müssen erneut gesetzt werden.
 
 `nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
 
@@ -466,11 +450,10 @@ config.serve_static_assets = true
 Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 
 ```bash
-./gitlab/lib/support/init.d/gitlab start
-	# oder:  svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
+svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
 ```
 
-## Upgraden von 6.x auf 7.x
+## Upgraden auf 7.x
 
 Die GitLab-Shell ist der einfachste Part:
 
@@ -495,8 +478,9 @@ Nun Gitlab:
 ```bash
 cd gitlab
 bundle exec rake gitlab:backup:create RAILS_ENV=production
+svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
+# stoppen noch laufender gitlabinstancen
 ./lib/support/init.d/gitlab stop
-# oder: svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
 
 git fetch --all
 git checkout 7-2-stable
@@ -506,22 +490,12 @@ bundle exec rake db:migrate RAILS_ENV=production
 bundle exec rake assets:clean assets:precompile cache:clear RAILS_ENV=production
 
 # siehe unten:
-nano lib/support/init.d/gitlab
 nano config/environments/production.rb
 
-./lib/support/init.d/gitlab start
-# oder: svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
+svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
 ```
 
-wobei für unsere *"Hacks"* wieder gilt, falls wir nicht die daemontools verwenden:
-
-`nano lib/support/init.d/gitlab` [siehe auch](#init-script)
-
-```bash
-app_user="[Nutzername]"
-```
-
-und auf jeden Fall:
+wobei für unsere *"Hacks"* wieder gilt:
 
 `nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
 
