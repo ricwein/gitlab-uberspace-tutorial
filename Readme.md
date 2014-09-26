@@ -285,9 +285,14 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
 
 ```htaccess
 <IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
+   RewriteEngine On
+
+   RewriteCond %{HTTPS} !=on
+   RewriteCond %{ENV:HTTPS} !=on
+   RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+
+   RewriteBase /
+   RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
 </IfModule>
 
 RequestHeader set X-Forwarded-Proto https
