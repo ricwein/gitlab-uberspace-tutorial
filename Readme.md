@@ -83,7 +83,7 @@ Unten die Shellbefehle nach Anleitung.
 
 ```bash
 cd ~
-git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.7
+git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.8
 cd gitlab-shell
 cp config.yml.example config.yml
 nano config.yml
@@ -423,7 +423,7 @@ Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell.
 ```bash
 cd gitlab-shell
 git fetch
-git checkout v1.9.7
+git checkout v1.9.8
 ```
 
 ### GitLab
@@ -460,7 +460,7 @@ Die GitLab-Shell ist der einfachste Part:
 ```bash
 cd gitlab-shell
 git fetch
-git checkout v1.9.7
+git checkout v1.9.8
 ```
 
 Nun folgt GitLab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
