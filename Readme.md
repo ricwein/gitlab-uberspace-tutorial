@@ -83,7 +83,7 @@ Unten die Shellbefehle nach Anleitung.
 
 ```bash
 cd ~
-git clone https://github.com/gitlabhq/gitlab-shell.git -b v1.9.7
+git clone https://github.com/gitlabhq/gitlab-shell.git -b v2.0.1
 cd gitlab-shell
 cp config.yml.example config.yml
 nano config.yml
@@ -124,7 +124,7 @@ Nachdem die Konfigurationdatei geändert ist.
 
 ```bash
 cd ~
-git clone https://github.com/gitlabhq/gitlabhq.git -b 7-2-stable gitlab
+git clone https://github.com/gitlabhq/gitlabhq.git -b 7-4-stable gitlab
 cd gitlab
 
 # Clone a few config
@@ -141,9 +141,6 @@ mkdir tmp/pids/
 mkdir tmp/sockets/
 mkdir public/uploads
 
-chmod -R u+rwX  log/
-chmod -R u+rwX  tmp/
-chmod -R u+rwX  public/uploads
 chmod o-rwx config/database.yml
 
 #Muss nicht aber ist nützlich
@@ -213,14 +210,11 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 ```
 
 
-### "Hack a little bit" damit GitLab sicher den Redis-Socket benutzt
+### statische Files ausliefern
 
 `nano config/environments/production.rb`
 
-ändert `config.cache_store` und wechselt `config.serve_static_assets` von *false* auf *true*, damit GitLab statische Files und Benutzer-Uploads laden kann!
-
 ```ruby
-config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
 config.serve_static_assets = true
 ```
 
@@ -244,6 +238,15 @@ bundle install --deployment --without development test postgres aws
 
 ```bash
 bundle exec rake gitlab:setup RAILS_ENV=production
+```
+
+## Precompile assets ##
+
+```bash
+bundle exec rake assets:precompile RAILS_ENV=production
+```
+
+Dieser Vorgang kann eine Weile dauern...
 
 # Tipp 'yes' zum erstellen der Datenbank
 # Wenn ihr fertig seid, sollte so etwas kommen:
@@ -257,10 +260,6 @@ password......5iveL!fe
 **Den Benutzernamen und das Passwort brauchen wir später für den erstmaligen Login noch!**
 
 
-## Init Script
-
-GitLab erstellt ein init.d Script, dass GitLab als Service ausgeführt wird. Das ist unter Uberspace **so** nicht möglich.
-
 ### GitLab als Uberspace-Service verwalten ###
 
 Gabriel Bretschner hat die ultimative Lösung für Uberspace parat!
@@ -273,11 +272,6 @@ Eine kurze Anleitung und die Service-Skripte findet ihr in seiner eigenen [GitLa
 - [sidekiq-Service](services/sidekiq)
 - [gitlab-Service](services/gitlab)
 
-Diese Methode bringt viele Vorteile im Vergleich zum manuelle Start!
-- Das Init-Skript muss nicht angepasst werden (auch nicht nach Updates!)
-- GitLab startet auch nach einem Server-Neustart automatisch wieder mit
-- GitLab wird nicht nur gestartet, sondern auch überwacht
-- siehe auch [Ubersapce-Wiki: daemontools](https://wiki.uberspace.de/system:daemontools)
 
 ## Apache Redirect
 
@@ -428,7 +422,7 @@ Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell.
 ```bash
 cd gitlab-shell
 git fetch
-git checkout v1.9.7
+git checkout v2.0.1
 ```
 
 ### GitLab
@@ -445,10 +439,9 @@ ruby script/upgrade.rb
 
 Änderungen in der production.rb müssen erneut gesetzt werden.
 
-`nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
+`nano config/environments/production.rb`
 
 ```ruby
-config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
 config.serve_static_assets = true
 ```
 
@@ -465,14 +458,14 @@ Die GitLab-Shell ist der einfachste Part:
 ```bash
 cd gitlab-shell
 git fetch
-git checkout v1.9.7
+git checkout v2.0.1
 ```
 
 Nun folgt GitLab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
 
-Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout auf 7.2. Installieren. Daten migrieren. Assets kompilieren und aufräumen. *"Hacks"* wiederherstellen. GitLab starten.
+Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout auf 7.4. Installieren. Daten migrieren. Assets kompilieren und aufräumen. GitLab starten.
 
-*Gitlab 7-2-stable* benätigt cmake als Abhängigkeit. Details [siehe hier](#cmake)
+*Gitlab 7-4-stable* benätigt cmake als Abhängigkeit. Details [siehe hier](#cmake)
 
 ```bash
 toast arm cmake
@@ -488,7 +481,7 @@ svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
 ./lib/support/init.d/gitlab stop
 
 git fetch --all
-git checkout 7-2-stable
+git checkout 7-4-stable
 
 bundle install --without development test postgres aws --deployment
 bundle exec rake db:migrate RAILS_ENV=production
@@ -502,10 +495,9 @@ svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
 
 wobei für unsere *"Hacks"* wieder gilt:
 
-`nano config/environments/production.rb` [siehe auch](#quot-hack-a-little-bit-quot-damit-gitlab-sicher-den-redis-socket-benutzt)
+`nano config/environments/production.yml`
 
 ```ruby
-config.cache_store = :redis_store, {:url => resque_url}, {namespace: 'cache:gitlab'}
 config.serve_static_assets = true
 ```
 
