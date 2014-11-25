@@ -234,7 +234,7 @@ bundle install --deployment --without development test postgres aws
 ```
 
 
-## Init Database
+## Init Database ##
 
 ```bash
 bundle exec rake gitlab:setup RAILS_ENV=production
@@ -279,14 +279,14 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
 
 ```htaccess
 <IfModule mod_rewrite.c>
-   RewriteEngine On
+ RewriteEngine On
 
-   RewriteCond %{HTTPS} !=on
-   RewriteCond %{ENV:HTTPS} !=on
-   RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+ RewriteCond %{HTTPS} !=on
+ RewriteCond %{ENV:HTTPS} !=on
+ RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
 
-   RewriteBase /
-   RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
+ RewriteBase /
+ RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
 </IfModule>
 
 RequestHeader set X-Forwarded-Proto https
@@ -463,7 +463,7 @@ git checkout v2.3.1
 
 Nun folgt GitLab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
 
-Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout auf 7.4. Installieren. Daten migrieren. Assets kompilieren und aufräumen. GitLab starten.
+Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout auf 7.5. Installieren. Daten migrieren. Assets kompilieren und aufräumen. GitLab starten.
 
 *Gitlab 7-2-stable* benötigt cmake als Abhängigkeit. Details [siehe hier](#cmake)
 
@@ -513,7 +513,7 @@ bundle exec rake gitlab:check RAILS_ENV=production
 
 Nach einem Tutorial von: [Benjamin Milde](http://kobralab.centaurus.uberspace.de/benni/uberspace/blob/master/install.md)
 
-Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](Readme.md)
+Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](https://ricwein.com/u/ricwein)
 
 Support und Feedback von: [Gabriel Bretschner](http://kanedo.net), [Christian Raunitschka](http://ch.rauni.me), [Jan Beck](http://jancbeck.com)
 
