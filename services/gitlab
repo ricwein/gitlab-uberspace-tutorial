@@ -31,9 +31,10 @@
 # Now let's go!
 export RAILS_ENV="production"
 export GITLAB_PATH="$HOME/gitlab"
+export REDIS_URL=unix:$HOME/.redis/sock
 
 cd $GITLAB_PATH/
-app_root=$(pwd)
+app_root=$GITLAB_PATH
 unicorn_config="$app_root/config/unicorn.rb"
 
 exec bundle exec unicorn_rails -c $unicorn_config -E $RAILS_ENV 2>&1
