@@ -1,5 +1,6 @@
 # Installation von GitLab 7.7 (mit *https* - yay!)
 
+
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
 
 
@@ -234,7 +235,7 @@ bundle install --deployment --without development test postgres aws
 ```
 
 
-## Init Database
+## Init Database ##
 
 ```bash
 bundle exec rake gitlab:setup RAILS_ENV=production
@@ -254,8 +255,6 @@ Administrator account created:
 
 login.........admin@local.host
 password......5iveL!fe
-
-```
 
 **Den Benutzernamen und das Passwort brauchen wir später für den erstmaligen Login noch!**
 
@@ -279,14 +278,14 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
 
 ```htaccess
 <IfModule mod_rewrite.c>
-   RewriteEngine On
+ RewriteEngine On
 
-   RewriteCond %{HTTPS} !=on
-   RewriteCond %{ENV:HTTPS} !=on
-   RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+ RewriteCond %{HTTPS} !=on
+ RewriteCond %{ENV:HTTPS} !=on
+ RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
 
-   RewriteBase /
-   RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
+ RewriteBase /
+ RewriteRule ^(.*)$ http://127.0.0.1:[Der vorher gewählte Port]/$1 [P]
 </IfModule>
 
 RequestHeader set X-Forwarded-Proto https
@@ -513,7 +512,7 @@ bundle exec rake gitlab:check RAILS_ENV=production
 
 Nach einem Tutorial von: [Benjamin Milde](http://kobralab.centaurus.uberspace.de/benni/uberspace/blob/master/install.md)
 
-Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](Readme.md)
+Aktualisierungen, Fehlerbehebungen und Ergänzungen: [Richard Weinhold](https://ricwein.com/u/ricwein)
 
 Support und Feedback von: [Gabriel Bretschner](http://kanedo.net), [Christian Raunitschka](http://ch.rauni.me), [Jan Beck](http://jancbeck.com)
 

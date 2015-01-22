@@ -26,11 +26,12 @@
 #
 ########################################################################
 
-app_root="$HOME/gitlab"
-RAILS_ENV="production"
+export RAILS_ENV="production"
+export GITLAB_PATH="$HOME/gitlab"
+
+cd $GITLAB_PATH/
+app_root=$GITLAB_PATH
 sidekiq_pidfile="$app_root/tmp/pids/sidekiq.pid"
 sidekiq_logfile="$app_root/log/sidekiq.log"
 
-cd $app_root
-# Now let's go!
-bundle exec sidekiq -q post_receive -q mailer -q system_hook -q project_web_hook -q gitlab_shell -q common -q default -e $RAILS_ENV -P $sidekiq_pidfile >> $sidekiq_logfile 2>&1
+exec bundle exec sidekiq -q post_receive,mailer,system_hook,project_web_hook,gitlab_shell,common,default -e $RAILS_ENV -P $sidekiq_pidfile >> $sidekiq_logfile 2>&1
