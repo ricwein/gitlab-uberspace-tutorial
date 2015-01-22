@@ -1,4 +1,4 @@
-# Installation von GitLab 7.2 (mit *https* - yay!)
+# Installation von GitLab 7.7 (mit *https* - yay!)
 
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
 
@@ -16,7 +16,7 @@ Python ist auf den Uberspace-Servern bereits aktiviert. Jedoch manchmal noch in 
 
 Git wird in der Version 1.7.10+ benötigt. *Nicht zu verwechseln mit 1.7.1!*
 
-Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eure Version. Falls sie zu alt ist könnt ihr über Toast eine neuere Version installieren. Sucht dazu [hier](https://code.google.com/p/git-core/downloads/list) eine Version und kopiert den Link zum Tarball. Mit `toast arm [URL zum Tarball]` wird diese installiert und eingerichtet.
+Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eure Version. Falls sie zu alt ist könnt ihr über Toast eine neuere Version installieren. Sucht dazu [hier](https://www.kernel.org/pub/software/scm/git/?C=M;O=D) eine Version und kopiert den Link zum Tarball. Mit `toast arm [URL zum Tarball]` wird diese installiert und eingerichtet.
 
 
 ### Redis
@@ -83,7 +83,7 @@ Unten die Shellbefehle nach Anleitung.
 
 ```bash
 cd ~
-git clone https://github.com/gitlabhq/gitlab-shell.git -b v2.0.1
+git clone https://github.com/gitlabhq/gitlab-shell.git -b v2.4.1
 cd gitlab-shell
 cp config.yml.example config.yml
 nano config.yml
@@ -124,7 +124,7 @@ Nachdem die Konfigurationdatei geändert ist.
 
 ```bash
 cd ~
-git clone https://github.com/gitlabhq/gitlabhq.git -b 7-4-stable gitlab
+git clone https://github.com/gitlabhq/gitlabhq.git -b 7-7-stable gitlab
 cd gitlab
 
 # Clone a few config
@@ -417,12 +417,12 @@ Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fer
 
 ### Gitlab-Shell
 
-Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 1.9.7:
+Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 2.4.1:
 
 ```bash
 cd gitlab-shell
 git fetch
-git checkout v2.0.1
+git checkout v2.4.1
 ```
 
 ### GitLab
@@ -434,7 +434,7 @@ cd gitlab
 bundle exec rake gitlab:backup:create RAILS_ENV=production
 svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
 ./lib/support/init.d/gitlab stop
-ruby script/upgrade.rb
+ruby bin/upgrade.rb
 ```
 
 Änderungen in der production.rb müssen erneut gesetzt werden.
@@ -458,14 +458,14 @@ Die GitLab-Shell ist der einfachste Part:
 ```bash
 cd gitlab-shell
 git fetch
-git checkout v2.0.1
+git checkout v2.4.1
 ```
 
 Nun folgt GitLab itself. Im wesentlich habe ich mich dabei an die offizielle Anleitung gehalten: [Docu 6.9 to 7.0](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/update/6.9-to-7.0.md)
 
-Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout auf 7.4. Installieren. Daten migrieren. Assets kompilieren und aufräumen. GitLab starten.
+Kurz: Backup. Abhängigkeiten installieren. GitLab stoppen. Git pullen. Checkout auf 7.7. Installieren. Daten migrieren. Assets kompilieren und aufräumen. GitLab starten.
 
-*Gitlab 7-4-stable* benätigt cmake als Abhängigkeit. Details [siehe hier](#cmake)
+*Gitlab 7-4-stable* benötigt cmake als Abhängigkeit. Details [siehe hier](#cmake)
 
 ```bash
 toast arm cmake
@@ -481,7 +481,7 @@ svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
 ./lib/support/init.d/gitlab stop
 
 git fetch --all
-git checkout 7-4-stable
+git checkout 7-7-stable
 
 bundle install --without development test postgres aws --deployment
 bundle exec rake db:migrate RAILS_ENV=production
