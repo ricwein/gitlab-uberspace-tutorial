@@ -65,7 +65,7 @@ gem install bundler --user-install --no-ri --no-rdoc
 
 **.gemrc**
 
-Alternativ lässt sich diese option auch dauerhaft aktivieren. Dafür einfach `gem: --user-install --no-rdoc --no-ri` in die ~/.gemrc eintragen. Falls die Datei noch nicht existiert erstellen.
+Alternativ lässt sich diese Option auch dauerhaft aktivieren. Dafür einfach `gem: --user-install --no-rdoc --no-ri` in die ~/.gemrc eintragen. Falls die Datei noch nicht existiert erstellen.
 
 ```bash
 touch ~/.gemrc
@@ -75,7 +75,7 @@ echo "gem: --user-install --no-rdoc --no-ri" > ~/.gemrc
 
 ## System User
 
-Auf den Uberspace Servern gibt es nicht die Möglichkeit einen extra User `git` anzulegen. Der Normale Nutzer geht auch. Jedoch muss das in fast allen Konfigurationsfiles beachtet werden.
+Auf den Uberspace Servern gibt es *nicht* die Möglichkeit einen extra User `git` anzulegen. Der Normale Nutzer geht allerdings auch. Jedoch muss das in fast allen Konfigurationsfiles beachtet werden.
 
 
 ## GitLab Shell
@@ -249,8 +249,8 @@ bundle exec rake assets:precompile RAILS_ENV=production
 
 Dieser Vorgang kann eine Weile dauern...
 
-# Tipp 'yes' zum erstellen der Datenbank
-# Wenn ihr fertig seid, sollte so etwas kommen:
+### Tipp 'yes' zum erstellen der Datenbank ###
+# Wenn ihr fertig seid, sollte so etwas kommen: #
 Administrator account created:
 
 login.........admin@local.host
