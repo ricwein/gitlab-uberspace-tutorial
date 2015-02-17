@@ -253,8 +253,10 @@ Dieser Vorgang kann eine Weile dauern...
 # Wenn ihr fertig seid, sollte so etwas kommen: #
 Administrator account created:
 
+```
 login.........admin@local.host
 password......5iveL!fe
+```
 
 **Den Benutzernamen und das Passwort brauchen wir später für den erstmaligen Login noch!**
 
