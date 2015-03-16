@@ -80,7 +80,7 @@ Auf den Uberspace Servern gibt es *nicht* die Möglichkeit einen extra User `git
 
 ## GitLab Shell
 
-Unten die Shellbefehle nach Anleitung.
+Unten die Shell-Befehle nach Anleitung.
 
 ```bash
 cd ~
@@ -114,7 +114,7 @@ socket: /home/[Nutzername]/.redis/sock
 
 **Für die gitlab_url mit https muss der komplette Pfad inklusive Server und .uberspace.de angegeben werden, damit das Zertifikat auch passt. Auch wenn ihr eine eigene Domain haben solltet!**
 
-Nachdem die Konfigurationdatei geändert ist.
+Nachdem die Konfigurationdatei geändert wurde.
 
 ```bash
 ./bin/install
@@ -195,7 +195,7 @@ alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 
 ### resque.yml Konfiguration
 
-Richtigen redis Zugang einfügen
+Den richtigen Redis Zugang einfügen
 `production: 'unix:/home/[Nutzername]/.redis/sock'`
 Socket ändern, falls er bei der GitLab Shell schon anders war.
 
@@ -305,19 +305,19 @@ bundle exec rake gitlab:env:info RAILS_ENV=production
 bundle exec rake gitlab:check RAILS_ENV=production
 ```
 
-Falls alles passt, bis auf das nicht kopierte init.d script, dann ..
+Falls alles passt, bis auf das nicht kopierte init.d Skript, dann:
 
 `bundle exec rake assets:precompile RAILS_ENV=production`
 
 
 ## Fertig
 
-Jetzt sollte erstmal alles funktionieren.
+Jetzt sollte erst mal alles funktionieren.
 
 
 ## GitLab-Shell und die SSH-keys
 
-Ein großes Problem bei GitLab und uberspace ist das fehlen eines separaten Users. Loggt ihr euch für gewöhnlich per Key über SSH ein, wird dies nach der Installation der GitLab-Shell nicht mehr möglich sein. Diese blockt nämlich den Shell-Zugriff für alle auf GitLab registrierten Keys! Trotzdem wollen wir aber gerne die GitLab-Pfade und Nutzerrechte zum clonen, pushen etc. benutzen.
+Ein großes Problem bei GitLab und Uberspace ist das fehlen eines separaten Users. Loggt ihr euch für gewöhnlich per Key über SSH ein, wird dies nach der Installation der GitLab-Shell nicht mehr möglich sein. Diese blockt nämlich den Shell-Zugriff für alle auf GitLab registrierten Keys! Trotzdem wollen wir aber gerne die GitLab-Pfade und Nutzerrechte zum clonen, pushen etc. benutzen.
 Im Grunde genommen gibt es dafür zwei Mögliche Lösungen. Beide haben den Vorteil, dass durch die Nutzung der ssh-config die angelegten Host-Aliases Systemweit zu Verfügung stehen (inklusive SFTP)!
 
 > Zur Nutzung unter Windows kann ich leider keine klare Aussage treffen. Wenn hier jemand Erfahrung hat würde ich mich sehr über Hinweise freuen.
@@ -330,7 +330,7 @@ Ihr legt euch ein separates Key-Paar für den Shellzugriff an.
 ```bash
 ssh-keygen -f ~/.ssh/shellAccess
 # optional auch mit custom-Mail/Kommentar:
-ssh-keygen -f ~/.ssh/shellAccess -C [aussagekrätiger-Name]@[server]
+ssh-keygen -f ~/.ssh/shellAccess -C [aussagekräftiger-Name]@[server]
 ```
 
 und kopiert den Inhalt des Public-Keys (`.pub`) in die `~/.ssh/authorized_keys` eures Servers.
