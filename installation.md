@@ -41,11 +41,12 @@ toast arm cmake
 Ruby wird in der Version 2.0+ benötigt.
 
 Auf den Uberspace Servern wird standardmäßig eine ältere Version genutzt. [Hier](https://wiki.uberspace.de/development:ruby) wird erklärt wie die neueren zur Verfügung stehenden Versionen aktiviert werden.
-Einfach folgendes in eure .bashrc eintragen (`nano ~/.bashrc`)
 
 ```bash
+cat \<\<'__EOF__' >> ~/.bashrc
 export PATH=/package/host/localhost/ruby-2.1.1/bin:$PATH
 export PATH=$HOME/.gem/ruby/2.1.0/bin:$PATH
+__EOF__
 ```
 
 
