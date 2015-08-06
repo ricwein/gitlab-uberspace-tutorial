@@ -337,7 +337,7 @@ und kopiert den Inhalt des Public-Keys (`.pub`) in die `~/.ssh/authorized_keys` 
 
 Anschließend müsst ihr allerdings beim Login noch deutlich machen, mit welchem Keypaar ihr euch einloggen wollt. Das geht am Besten, indem ihr euch in eure `~/.ssh/config` einen Host-*Alias* anlegt, der dann in etwa wie folgt aussehen sollte:
 
-```apache
+```
 Host Servername.ShellKey
 HostName [Host]
 User [Nutzername]
@@ -369,7 +369,7 @@ ssh -o PreferredAuthentications=keyboard-interactive -o PubkeyAuthentication=no 
 
 Zum Dauerhaften deaktivieren erstellen wir uns wieder einen Eintrag in die ssh-config `~/.ssh/config`.
 
-```apache
+```
 Host Servername.NoKey
 HostName [Nutzername].[Host].uberspace.de
 User [Nutzername]
@@ -395,7 +395,7 @@ Dann erstellt ihr euch ein neues Keypaar und den passenden Eintrag in die ssh-co
 ssh-keygen -f ~/.ssh/shellAccess
 ```
 
-```apache
+```
 Host git.[Nutzername].[Host].uberspace.de
 User [Nutzername]
 IdentityFile ~/.ssh/shellAccess
