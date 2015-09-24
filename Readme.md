@@ -1,19 +1,19 @@
-# Installation von GitLab 8.0
+# Installation von GitLab 8.0 #
 
 
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
 
 
-## Abhängigkeiten
+## Abhängigkeiten ##
 
-### Python
+### Python ###
 
 Python wird in einer Version 2.5+ (nicht 3.0+) benötigt.
 
 Python ist auf den Uberspace-Servern bereits aktiviert. Jedoch manchmal noch in der Version 2.4. Prüft das mit dem Befehl `python -V`. Falls noch die alte Version aktiv ist, könnt ihr nach der Anleitung [hier](https://wiki.uberspace.de/development:python) eine neuere aktivieren.
 
 
-### Git
+### Git ###
 
 Git wird in der Version 1.7.10+ benötigt. *Nicht zu verwechseln mit 1.7.1!*
 
@@ -22,15 +22,16 @@ Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eur
 ```bash
 #Git 2.5.3:
 toast arm https://github.com/git/git/archive/v2.5.3.tar.gz
+# Dies kann einige Minuten dauern...
 ```
 
 
-### Redis
+### Redis ###
 
 Installiere Redis wie [hier](https://wiki.uberspace.de/database:redis) beschrieben. Redis akzeptiert auf Uberspace nur Verbindungen zu seinem Socket, was in allen Konfigurationsfiles von GitLab zu beachten ist.
 
 
-### cmake
+### cmake ###
 
 Ab Version 7.2 benötigt Gitlab zudem cmake. Dies ist aber auf Uberspace nicht standardmäßig vorinstalliert!
 
@@ -41,7 +42,7 @@ toast arm cmake
 ```
 
 
-### Ruby
+### Ruby ###
 
 Ruby wird in der Version 2.0+ benötigt.
 
@@ -55,7 +56,7 @@ __EOF__
 ```
 
 
-#### .bashrc vs. .bash_profile
+#### .bashrc vs. .bash_profile ####
 SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH Keys direkt auf das GL Shell Script verweisen wird `.bash_profile` nicht geladen.
 Seid ihr der Anleitung auf [Uberspace](https://wiki.uberspace.de/development:ruby) gefolgt, müssen daher die `$PATH` Angaben aus der `.bash_profile` in `.bashrc` verschoben (oder kopiert) werden.
 
@@ -78,18 +79,18 @@ echo "gem: --user-install --no-rdoc --no-ri" > ~/.gemrc
 ```
 
 
-## System User
+## System User ##
 
 Auf den Uberspace Servern gibt es *nicht* die Möglichkeit einen extra User `git` anzulegen. Der Normale Nutzer geht allerdings auch. Jedoch muss das in **fast allen** Konfigurationsfiles beachtet werden.
 
 
-## GitLab Shell
+## GitLab Shell ##
 
 Unten die Shell-Befehle nach Anleitung.
 
 ```bash
 cd ~
-git clone https://github.com/gitlabhq/gitlab-shell.git -b v2.6.5
+git clone https://gitlab.com/gitlab-org/gitlab-shell.git -b v2.6.5
 cd gitlab-shell
 cp config.yml.example config.yml
 nano config.yml
@@ -127,7 +128,7 @@ Nachdem die Konfigurationdatei geändert wurde.
 
 ## Gitlab-Git-HTTP-Server ##
 
-Neu hinzugekommen ist seit Gitlab 8.0 der so genannte git-http-server. Ein kleiner Prozess, der beim pushen und pullen von Git-Repositories als HTTP-Server einspringt, und so den Unicorn-Server entlastet (damit das Frontend weiterhin flüssig läuft).
+Neu hinzugekommen ist seit Gitlab 8.0 der so genannte *git-http-server*. Ein kleiner Prozess, der beim pushen und pullen von Git-Repositories als HTTP-Server einspringt, und so den Unicorn-Server entlastet (damit das Frontend weiterhin flüssig läuft).
 
 ```bash
 cd ~
@@ -136,7 +137,7 @@ cd gitlab-git-http-server
 make
 ```
 
-## GitLab
+## GitLab ##
 
 ```bash
 cd ~
@@ -166,7 +167,7 @@ git config --global core.autocrlf input
 ```
 
 
-### gitlab.yml Konfiguration
+### gitlab.yml Konfiguration ###
 
 `nano config/gitlab.yml`
 
@@ -189,7 +190,7 @@ git:
 bin_path: /home/[Nutzername]/.toast/armed/bin/git
 ```
 
-**Der `git_path` sollte stimmen wenn git per Toast installiert wurde. Trotzdem sicherheitshalber per `which git` den Pfad auf seine Richtigkeit überprüfen!**
+**Der `git_path` sollte stimmen, falls git per Toast installiert wurde. Trotzdem sicherheitshalber per `which git` den Pfad auf seine Richtigkeit überprüfen!**
 
 
 ### unicorn.rb Konfiguration
@@ -197,7 +198,7 @@ bin_path: /home/[Nutzername]/.toast/armed/bin/git
 `nano config/unicorn.rb`
 
 alle `/home/git/...` ändern in `/home/[Nutzername]/...`
-`listen "127.0.0.1:8080"...` port in einen noch freien port ändern, z.B. 9765 `listen "127.0.0.1:9765"...`
+`listen "127.0.0.1:8080"...` *port* in einen noch freien Port ändern. z.B. für den Port 9765 in: `listen "127.0.0.1:9765"...`
 
 Um zu überprüfen ob der gewählte Port noch frei ist, führt folgenden Befehl durch. Ist die Rückgabe leer, so ist der Port noch nicht belegt.
 
@@ -232,7 +233,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 ```
 
 
-### statische Files ausliefern
+### statische Files ausliefern ###
 
 `nano config/environments/production.rb`
 
@@ -241,7 +242,7 @@ config.serve_static_assets = true
 ```
 
 
-## Install Bundle Gems
+## Install Bundle Gems ##
 
 **Achtung:** [Gabriel Bretschner][1] Hat darauf hingewiesen, dass es auf Servern unter CentOS 5 zu Problemen mit *Charlock Holmes* kommen kann. Die Lösung ist recht einfach und stammt aus dem [Uberspace-Wiki](https://wiki.uberspace.de/development:ruby#charlock_holmes):
 
@@ -270,7 +271,7 @@ bundle exec rake assets:precompile RAILS_ENV=production
 
 Dieser Vorgang kann eine Weile dauern...
 
-### Tipp 'yes' zum erstellen der Datenbank ###
+### Tippt 'yes' zum erstellen der Datenbank ###
 # Wenn ihr fertig seid, sollte so etwas kommen: #
 Administrator account created:
 
@@ -299,7 +300,7 @@ Eine kurze Anleitung und die Service-Skripte findet ihr in seiner eigenen [GitLa
 
 In dem Script sind am Anfang zwei Ports anzugeben.
 1. Für `[your unicorn port]` nehmen wir den unter [unicorn.rb Konfiguration](#unicornrb-konfiguration) ausgewählten Port für den Unicorn-Webserver.
-2. Für `[your git-http port]` suchen wir uns einen neuen freien Port zwischen 1024 und 61000.
+2. Für `[your git-http port]` suchen wir uns einen neuen freien Port nach dem selben Schema aus (zwischen 1024 und 61000) und merken uns diesen nun auch noch.
 
 ## Apache Redirect
 
@@ -330,18 +331,18 @@ RequestHeader set X-Forwarded-Proto https
 
 > siehe Beispiel-.htaccess: [.htaccess](_.htaccess)
 
-Auch hier sind wieder die beiden Ports zu ersetzen.
-Die Zeile mit `RequestHeader` behebt den Fehler "Can't verify CSRF token authenticity" beim Login mit https.
+Hier dürfen nun die beiden gemerkten Ports eingesetzt und anschließend endlich vergessen werden!
+
+> Die Zeile mit `RequestHeader` behebt den Fehler "Can't verify CSRF token authenticity" beim Login mit https.
 
 ## Check Status
 
 ```bash
 bundle exec rake gitlab:env:info RAILS_ENV=production
-
 bundle exec rake gitlab:check RAILS_ENV=production
 ```
 
-Falls alles passt, bis auf das nicht kopierte init.d Skript, dann:
+Falls alles passt, bis auf das nicht eingetragene init.d Skript, dann:
 
 `bundle exec rake assets:precompile RAILS_ENV=production`
 
@@ -457,7 +458,7 @@ Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fer
 Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 2.6.5:
 
 ```bash
-cd gitlab-shell
+cd ~/gitlab-shell
 git fetch
 git checkout v2.6.5
 ```
@@ -467,8 +468,8 @@ git checkout v2.6.5
 Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess stoppen, den aktuellen Stand pullen und neu builden lassen.
 
 ```bash
-cd gitlab
-bundle exec rake gitlab:backup:create RAILS_ENV=production
+cd ~/gitlab
+bundle exec rake gitlab:backup:create RAILS_ENV=production # kann eine Weile dauern
 svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
 
 git fetch --all
@@ -478,6 +479,8 @@ bundle install --without development test postgres aws --deployment
 bundle exec rake db:migrate RAILS_ENV=production
 bundle exec rake assets:clean assets:precompile cache:clear RAILS_ENV=production
 ```
+
+> Fall es beim `git fetch` zu Konflikten kommt, reicht in der Regel ein einfaches `git checkout filename` für die entsprechenden Dateien. Danach kann `git fetch` erneut ausgeführt, und der Update-Prozess fortgeführt werden.
 
 Änderungen in der production.rb müssen gegebenenfalls erneut gesetzt werden.
 
@@ -504,12 +507,11 @@ bundle exec rake gitlab:check RAILS_ENV=production
 ## Upgraden von 7.x auf 8.x
 
 Bei einem Upgrade auf Gitlab 8.x ist der neu hinzugekommene git-http-server zu beachten.
-
 Dieser kann wie in [Gitlab-Git-HTTP-Server](#gitlab-git-http-server) erwähnt installiert werden.
 
-Eine Konfiguration des Tools selber ist nicht notwendig. Dafür müssen entsprechende Ports im neuen Service-Script angeben werden. Siehe: [GitLab als Uberspace-Service verwalten](#gitlab-als-uberspace-service-verwalten)
+Eine Konfiguration des Tools selber ist nicht notwendig. Dafür müssen entsprechende Ports im neuen Service-Script angeben werden (siehe:[GitLab als Uberspace-Service verwalten](#gitlab-als-uberspace-service-verwalten)).
 
-Um die Zuordnung zum jeweiligen WebServer unserem Apache mitzuteilen müssen folgende zwei Zeilen in der .htaccess ergänzt werden (siehe [.htaccess](_.htaccess)):
+Um die Zuordnung zum jeweiligen WebServer unserem Apache mitzuteilen, müssen folgende zwei Zeilen in der *.htaccess* vor dem allgemeinen Routing zu Unicorn ergänzt werden (siehe [.htaccess](_.htaccess)):
 
 ```htaccess
 RewriteCond %{REQUEST_URI} .*\.(git)
