@@ -1,5 +1,23 @@
 # Installation von GitLab 8.0 #
 
+1. [Abhängigkeiten](#abhängigkeiten)
+2. [System User](#system-user)
+3. [GitLab Shell](#gitlab-shell)
+4. [Gitlab-Git-HTTP-Server](#gitlab-git-http-server)
+5. [GitLab](#gitlab)
+6. [Install Bundle Gems](#install-bundle-gems)
+7. [Init Database](#init-database)
+8. [Precompile assets](#precompile-assets)
+9. [Apache Redirect](#apache-redirect)
+10. [Check Status](#check-status)
+11. [Fertig](#fertig)
+12. [GitLab-Shell und die SSH-keys](#gitlab-shell-und-die-ssh-keys)
+
+13. [Upgraden](#upgraden)
+14. [Upgraden von 7.x auf 8.x](#upgraden-von-7x-auf-8x)
+
+15. [Impressum](#impressum)
+
 
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
 
@@ -272,10 +290,12 @@ bundle exec rake assets:precompile RAILS_ENV=production
 Dieser Vorgang kann eine Weile dauern...
 
 ### Tippt 'yes' zum erstellen der Datenbank ###
-# Wenn ihr fertig seid, sollte so etwas kommen: #
-Administrator account created:
+
+**Wenn ihr fertig seid, sollte so etwas kommen:**
 
 ```
+Administrator account created:
+
 login.........root
 password......5iveL!fe
 ```
@@ -302,7 +322,7 @@ In dem Script sind am Anfang zwei Ports anzugeben.
 1. Für `[your unicorn port]` nehmen wir den unter [unicorn.rb Konfiguration](#unicornrb-konfiguration) ausgewählten Port für den Unicorn-Webserver.
 2. Für `[your git-http port]` suchen wir uns einen neuen freien Port nach dem selben Schema aus (zwischen 1024 und 61000) und merken uns diesen nun auch noch.
 
-## Apache Redirect
+## Apache Redirect ##
 
 In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit füllen
 
@@ -335,7 +355,7 @@ Hier dürfen nun die beiden gemerkten Ports eingesetzt und anschließend endlich
 
 > Die Zeile mit `RequestHeader` behebt den Fehler "Can't verify CSRF token authenticity" beim Login mit https.
 
-## Check Status
+## Check Status ##
 
 ```bash
 bundle exec rake gitlab:env:info RAILS_ENV=production
@@ -347,12 +367,12 @@ Falls alles passt, bis auf das nicht eingetragene init.d Skript, dann:
 `bundle exec rake assets:precompile RAILS_ENV=production`
 
 
-## Fertig
+## Fertig ##
 
 Jetzt sollte erst mal alles funktionieren.
 
 
-## GitLab-Shell und die SSH-keys
+## GitLab-Shell und die SSH-keys ##
 
 Ein großes Problem bei GitLab und Uberspace ist das fehlen eines separaten Users. Loggt ihr euch für gewöhnlich per Key über SSH ein, wird dies nach der Installation der GitLab-Shell nicht mehr möglich sein. Diese blockt nämlich den Shell-Zugriff für alle auf GitLab registrierten Keys! Trotzdem wollen wir aber gerne die GitLab-Pfade und Nutzerrechte zum clonen, pushen etc. benutzen.
 Im Grunde genommen gibt es dafür zwei Mögliche Lösungen. Beide haben den Vorteil, dass durch die Nutzung der ssh-config die angelegten Host-Aliases Systemweit zu Verfügung stehen (inklusive SFTP)!
@@ -360,7 +380,7 @@ Im Grunde genommen gibt es dafür zwei Mögliche Lösungen. Beide haben den Vort
 > Zur Nutzung unter Windows kann ich leider keine klare Aussage treffen. Wenn hier jemand Erfahrung hat würde ich mich sehr über Hinweise freuen.
 
 
-### Separates Keypaar
+### Separates Keypaar ###
 
 Ihr legt euch ein separates Key-Paar für den Shellzugriff an.
 
@@ -393,7 +413,7 @@ ssh -i ~/.ssh/shellAccess [Nutzername]@[Host]
 ```
 
 
-### per Passwort
+### per Passwort ###
 
 Alternative Zwei funktioniert so ähnlich, verzichtet aber auf ein weiteres Keypaar. Stattdessen loggen wir uns old-school mäßig via Passwort ein.
 Hierfür muss allerdings ssh konkret der Login mit einem Key verboten werden.
@@ -415,7 +435,7 @@ PubkeyAuthentication no
 
 Der Befehl zum Verbinden lautet nun `ssh Servername.NoKey`.
 
-### Eindeutige Logins durch Subdomains
+### Eindeutige Logins durch Subdomains ###
 
 Gabriel Bretschner hat vor kurzem eine super Ergänzung [veröffentlicht][1].
 Er erklärt darin wie sich das Problem mit den SSH-Keys durch eine separate Subdomain für GitLab lösen lässt.
@@ -444,16 +464,16 @@ IdentitiesOnly yes
 Uberspace biete selber zwar Wildcard-Zertifikate an, diese sind aber natürlich nicht für eigene Domains oder Sub-Subdomains der User gültig.
 > Im Allgemeinen lässt Uberspace zwar [eigene Zertifikate](https://wiki.uberspace.de/webserver:https#nutzung_eigener_ssl-zertifikate) zu. Anbieter wie [StartCom](https://www.startssl.com/) bieten sogar einfache *Class 1* Zertifikate gratis an! Subdomains decken diese jedoch nicht ab (**Ausnahme**: StartSSL Class 1 beinhaltet eine Subdomain!) . Entsprechende *Class 2* Zertifikate kosten bei allen Stellen etwas.
 
-### ControlMaster
+### ControlMaster ###
 
 Falls Ihr für SSH einen [ControlMaster](https://wiki.uberspace.de/faq?s[]=controlmaster#ich_baue_viele_ssh-verbindungen_auf_und_komm_ploetzlich_nicht_mehr_rein) verwendet, solltet ihr diesen für die entsprechenden Einträge deaktivieren, um eine Verwirrung des Shell-Logins und des GitLab-Logins zu vermeiden!
 
 Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fertig!
 
 
-## Upgraden
+## Upgraden ##
 
-### Gitlab-Shell
+### Gitlab-Shell ###
 
 Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 2.6.5:
 
@@ -463,7 +483,7 @@ git fetch
 git checkout v2.6.5
 ```
 
-### GitLab
+### GitLab ###
 
 Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess stoppen, den aktuellen Stand pullen und neu builden lassen.
 
@@ -504,7 +524,7 @@ bundle exec rake gitlab:check RAILS_ENV=production
 ```
 
 
-## Upgraden von 7.x auf 8.x
+## Upgraden von 7.x auf 8.x ##
 
 Bei einem Upgrade auf Gitlab 8.x ist der neu hinzugekommene git-http-server zu beachten.
 Dieser kann wie in [Gitlab-Git-HTTP-Server](#gitlab-git-http-server) erwähnt installiert werden.
@@ -518,7 +538,7 @@ RewriteCond %{REQUEST_URI} .*\.(git)
 RewriteRule .* http://127.0.0.1:[your git-http port]%{REQUEST_URI} [P,QSA]
 ```
 
-## Impressum
+## Impressum ##
 
 Nach einem Tutorial von: [Benjamin Milde](http://kobralab.centaurus.uberspace.de/benni/uberspace/blob/master/install.md)
 
