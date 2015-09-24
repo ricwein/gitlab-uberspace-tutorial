@@ -1,0 +1,13 @@
+#!/bin/sh
+http_port=[your git-http port]
+unicorn_port=[your unicorn port]
+export GITLAB_PATH="$HOME/gitlab"
+pid_path="$GITLAB_PATH/tmp/pids"
+socket_path="$GITLAB_PATH/tmp/sockets"
+filename="gitlab-git-http-server"
+
+gitlab_git_http_server_options="-listenUmask 0 -listenNetwork tcp -listenAddr localhost:$http_port -authBackend http://127.0.0.1:$unicorn_port"
+gitlab_git_http_server_repo_root="$HOME/repositories"
+gitlab_git_http_server_log="$GITLAB_PATH/log/$filename.log"
+
+exec $HOME/$filename/$filename $gitlab_git_http_server_options $gitlab_git_http_server_repo_root >> $gitlab_git_http_server_log 2>&1

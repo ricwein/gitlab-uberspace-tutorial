@@ -8,19 +8,14 @@ if you haven't done it already, create a bin folder in your home directory:
 
     mkdir ~/bin
 
-copy `gitlab` and `sidekiq` in this `bin` folder.
-make both scripts executable with `chmod +x`
-**IMPORTANT** if your gitlab instance is __not__ installed in ~/gitlab you need to edit both service scripts and set the path according to your needs!
+copy `gitlab` `sidekiq` and `git-http-server` in this `bin` folder.
+make all three scripts executable with `chmod +x [filename]`
+**IMPORTANT** if your gitlab instance is __not__ installed in ~/gitlab you need to edit the service-scripts and set the path according to your needs!
 
-Setup two deamons according to [uberspace documentation](https://wiki.uberspace.de/system:daemontools):
+Setup deamons according to [uberspace documentation](https://wiki.uberspace.de/system:daemontools):
 
     uberspace-setup-service sidekiq ~/bin/sidekiq
     uberspace-setup-service gitlab ~/bin/gitlab
+    uberspace-setup-service git-http-server ~/bin/git-http-server
 
 That's it! Happy coding :-)
-
-## changelog
-
-### 2014-07-27
-
-initial version of this README. Test with [gitlab 7.5 stable](https://about.gitlab.com/) on [Uberspace](https://uberspace.de) CentOS 5 host.
