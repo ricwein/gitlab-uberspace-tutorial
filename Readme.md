@@ -162,7 +162,7 @@ cd ~
 git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 8-0-stable gitlab
 cd gitlab
 
-# Clone a few config
+# init some configs
 cp config/gitlab.yml.example config/gitlab.yml
 cp config/unicorn.rb.example config/unicorn.rb
 cp config/resque.yml.example config/resque.yml
@@ -170,7 +170,7 @@ cp config/database.yml.mysql config/database.yml
 
 cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb #No need to edit this later
 
-#Make a few Direktories and make sure the chmod is right
+# create some directories and make sure the chmod is correct
 mkdir /home/[Nutzername]/gitlab-satellites
 mkdir tmp/pids/
 mkdir tmp/sockets/
@@ -178,7 +178,7 @@ mkdir public/uploads
 
 chmod o-rwx config/database.yml
 
-#Muss nicht aber ist nützlich
+# Muss nicht aber ist nützlich
 git config --global user.name "GitLab"
 git config --global user.email "gitlab@localhost"
 git config --global core.autocrlf input
@@ -490,7 +490,7 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
 ```bash
 cd ~/gitlab
 bundle exec rake gitlab:backup:create RAILS_ENV=production # kann eine Weile dauern
-svc -d ~/service/run-gitlab && svc -d ~/service/run-sidekiq
+svc -d ~/service/gitlab && svc -d ~/service/sidekiq
 
 git fetch --all
 git checkout 8-0-stable
@@ -513,7 +513,7 @@ config.serve_static_assets = true
 Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 
 ```bash
-svc -u ~/service/run-sidekiq && svc -u ~/service/run-gitlab
+svc -u ~/service/sidekiq && svc -u ~/service/gitlab
 ```
 
 Nach dem Start schadet ein erneuter Check nicht:
@@ -529,9 +529,9 @@ bundle exec rake gitlab:check RAILS_ENV=production
 Bei einem Upgrade auf Gitlab 8.x ist der neu hinzugekommene git-http-server zu beachten.
 Dieser kann wie in [Gitlab-Git-HTTP-Server](#gitlab-git-http-server) erwähnt installiert werden.
 
-Eine Konfiguration des Tools selber ist nicht notwendig. Dafür müssen entsprechende Ports im neuen Service-Script angeben werden (siehe:[GitLab als Uberspace-Service verwalten](#gitlab-als-uberspace-service-verwalten)).
+Eine Konfiguration des Tools selber ist nicht notwendig. Dafür müssen entsprechende Ports im neuen Service-Script angeben werden (siehe: [GitLab als Uberspace-Service verwalten](#gitlab-als-uberspace-service-verwalten)).
 
-Um die Zuordnung zum jeweiligen WebServer unserem Apache mitzuteilen, müssen folgende zwei Zeilen in der *.htaccess* vor dem allgemeinen Routing zu Unicorn ergänzt werden (siehe [.htaccess](_.htaccess)):
+Um die Zuordnung zum jeweiligen WebServer unserem Apache mitzuteilen, müssen folgende zwei Zeilen in der *.htaccess* vor dem allgemeinen Routing zu Unicorn ergänzt werden (siehe: [.htaccess](_.htaccess)):
 
 ```htaccess
 RewriteCond %{REQUEST_URI} .*\.(git)
