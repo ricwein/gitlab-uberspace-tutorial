@@ -35,11 +35,11 @@ Python ist auf den Uberspace-Servern bereits aktiviert. Jedoch manchmal noch in 
 
 Git wird in der Version 1.7.10+ benötigt. *Nicht zu verwechseln mit 1.7.1!*
 
-Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eure Version. Falls sie zu alt ist könnt ihr über Toast eine neuere Version installieren. Sucht dazu [hier](https://github.com/git/git/releases) eine Version und kopiert den Link zum Tarball. Mit `toast arm [URL zum Tarball]` wird diese installiert und eingerichtet.
+Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eure Version. Falls sie zu alt ist könnt ihr über Toast eine neuere Version installieren. Sucht dazu [hier](https://www.kernel.org/pub/software/scm/git/) eine Version und kopiert den Link zum Tarball. Mit `toast arm [URL zum Tarball]` wird diese installiert und eingerichtet.
 
 ```bash
-#Git 2.5.3:
-toast arm https://github.com/git/git/archive/v2.5.3.tar.gz
+#Git 2.6.2:
+toast arm https://www.kernel.org/pub/software/scm/git/git-2.6.2.tar.gz
 # Dies kann einige Minuten dauern...
 ```
 
