@@ -171,11 +171,13 @@ cp config/database.yml.mysql config/database.yml
 cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb #No need to edit this later
 
 # create some directories and make sure the chmod is correct
-mkdir /home/[Nutzername]/gitlab-satellites
+mkdir $HOME/gitlab-satellites
+mkdir $HOME/repositories
 mkdir tmp/pids/
 mkdir tmp/sockets/
 mkdir public/uploads
 
+chmod g+ws $HOME/repositories && chmod o-rwx $HOME/repositories
 chmod o-rwx config/database.yml
 
 # Muss nicht aber ist nützlich
@@ -361,11 +363,6 @@ Hier dürfen nun die beiden gemerkten Ports eingesetzt und anschließend endlich
 bundle exec rake gitlab:env:info RAILS_ENV=production
 bundle exec rake gitlab:check RAILS_ENV=production
 ```
-
-Falls alles passt, bis auf das nicht eingetragene init.d Skript, dann:
-
-`bundle exec rake assets:precompile RAILS_ENV=production`
-
 
 ## Fertig ##
 
