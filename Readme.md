@@ -73,7 +73,6 @@ export PATH=$HOME/.gem/ruby/2.1.0/bin:$PATH
 __EOF__
 ```
 
-
 #### .bashrc vs. .bash_profile ####
 SSH Keys werden innerhalb GitLab über die GitLab Shell verwaltet. Da diese SSH Keys direkt auf das GL Shell Script verweisen wird `.bash_profile` nicht geladen.
 Seid ihr der Anleitung auf [Uberspace](https://wiki.uberspace.de/development:ruby) gefolgt, müssen daher die `$PATH` Angaben aus der `.bash_profile` in `.bashrc` verschoben (oder kopiert) werden.
