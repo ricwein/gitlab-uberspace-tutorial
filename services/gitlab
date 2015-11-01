@@ -22,7 +22,7 @@
 #
 ########################################################################
 #
-# Uberspace Service-Script to start gitlaband redis with daemontools
+# Uberspace Service-Script to start gitlab and redis with daemontools
 # in order to start redis use the global service script
 # for more information see https://uberspace.de/dokuwiki/database:redis#einrichtung
 #
