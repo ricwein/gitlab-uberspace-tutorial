@@ -1,9 +1,9 @@
-# Installation von GitLab 8.0 #
+# Installation von GitLab 8.3 #
 
 1. [Abhängigkeiten](#abhängigkeiten)
 2. [System User](#system-user)
 3. [GitLab Shell](#gitlab-shell)
-4. [Gitlab-Git-HTTP-Server](#gitlab-git-http-server)
+4. [GitLab Workhorse](#gitlab-workhorse)
 5. [GitLab](#gitlab)
 6. [Install Bundle Gems](#install-bundle-gems)
 7. [Init Database](#init-database)
@@ -38,8 +38,8 @@ Git wird in der Version 1.7.10+ benötigt. *Nicht zu verwechseln mit 1.7.1!*
 Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eure Version. Falls sie zu alt ist könnt ihr über Toast eine neuere Version installieren. Sucht dazu [hier](https://www.kernel.org/pub/software/scm/git/) eine Version und kopiert den Link zum Tarball. Mit `toast arm [URL zum Tarball]` wird diese installiert und eingerichtet.
 
 ```bash
-#Git 2.6.2:
-toast arm https://www.kernel.org/pub/software/scm/git/git-2.6.2.tar.gz
+#Git 2.6.4:
+toast arm https://www.kernel.org/pub/software/scm/git/git-2.6.4.tar.gz
 # Dies kann einige Minuten dauern...
 ```
 
@@ -68,8 +68,8 @@ Auf den Uberspace Servern wird standardmäßig eine ältere Version genutzt. [Hi
 
 ```bash
 cat \<\<'__EOF__' >> ~/.bashrc
-export PATH=/package/host/localhost/ruby-2.1.1/bin:$PATH
-export PATH=$HOME/.gem/ruby/2.1.0/bin:$PATH
+export PATH=/package/host/localhost/ruby-2.2.3/bin:$PATH
+export PATH=$HOME/.gem/ruby/2.2.0/bin:$PATH
 __EOF__
 ```
 
@@ -107,7 +107,7 @@ Unten die Shell-Befehle nach Anleitung.
 
 ```bash
 cd ~
-git clone https://gitlab.com/gitlab-org/gitlab-shell.git -b v2.6.5
+git clone https://gitlab.com/gitlab-org/gitlab-shell.git -b v2.6.8
 cd gitlab-shell
 cp config.yml.example config.yml
 nano config.yml
@@ -143,14 +143,14 @@ Nachdem die Konfigurationdatei geändert wurde.
 ./bin/install
 ```
 
-## Gitlab-Git-HTTP-Server ##
+## Gitlab-Workhorse ##
 
-Neu hinzugekommen ist seit Gitlab 8.0 der so genannte *git-http-server*. Ein kleiner Prozess, der beim pushen und pullen von Git-Repositories als HTTP-Server einspringt, und so den Unicorn-Server entlastet (damit das Frontend weiterhin flüssig läuft).
+Neu hinzugekommen ist seit Gitlab 8.0 der so genannte *git-http-server*. Dieser wird seit Gitlab 8.2 *gitlab-workhorse* genannt. Ein kleiner Prozess, der beim Pushen und Pullen von Git-Repositories als HTTP-Server einspringt, und so den Unicorn-Server entlastet (damit das Frontend weiterhin flüssig läuft).
 
 ```bash
 cd ~
-git clone https://gitlab.com/gitlab-org/gitlab-git-http-server.git
-cd gitlab-git-http-server
+git clone https://gitlab.com/gitlab-org/gitlab-workhorse.git
+cd gitlab-workhorse
 make
 ```
 
@@ -158,7 +158,7 @@ make
 
 ```bash
 cd ~
-git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 8-0-stable gitlab
+git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 8-3-stable gitlab
 cd gitlab
 
 # init some configs
@@ -167,7 +167,7 @@ cp config/unicorn.rb.example config/unicorn.rb
 cp config/resque.yml.example config/resque.yml
 cp config/database.yml.mysql config/database.yml
 
-cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb #No need to edit this later
+cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb # No need to edit this later
 
 # create some directories and make sure the chmod is correct
 mkdir $HOME/gitlab-satellites
@@ -317,7 +317,7 @@ Eine kurze Anleitung und die Service-Skripte findet ihr in seiner eigenen [GitLa
 - [gitlab-Service](services/gitlab) (Unicorn)
 
 **Und für den Neuen git-http-server:**
-- [git-http-server-Service](services/git-http-server)
+- [git-http-server-Service](services/gitlab-workhorse)
 
 In dem Script sind am Anfang zwei Ports anzugeben.
 1. Für `[your unicorn port]` nehmen wir den unter [unicorn.rb Konfiguration](#unicornrb-konfiguration) ausgewählten Port für den Unicorn-Webserver.
@@ -337,7 +337,7 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
     RewriteCond %{ENV:HTTPS} !=on
     RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
 
-    # redirect http-git requests to git-http-server
+    # redirect http-git requests to gitlab-workhorse
     RewriteCond %{REQUEST_URI} .*\.(git)
     RewriteRule .* http://127.0.0.1:[your git-http port]%{REQUEST_URI} [P,QSA]
 
@@ -471,12 +471,12 @@ Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fer
 
 ### Gitlab-Shell ###
 
-Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 2.6.5:
+Manche Gitlab-Upgrades benötigen auch eine aktuellere Version von Gitlab-Shell. Keine Panik, das ist ganz einfach - z.B.: auf 2.6.8:
 
 ```bash
 cd ~/gitlab-shell
 git fetch
-git checkout v2.6.5
+git checkout v2.6.8
 ```
 
 ### GitLab ###
@@ -486,10 +486,10 @@ Zuerst sicherheitshalber ein Backup erstellen. Anschließend einfach den Prozess
 ```bash
 cd ~/gitlab
 bundle exec rake gitlab:backup:create RAILS_ENV=production # kann eine Weile dauern
-svc -d ~/service/gitlab && svc -d ~/service/sidekiq
+svc -d ~/service/gitlab && svc -d ~/service/sidekiq && svc -d ~/service/gitlab-workhorse
 
 git fetch --all
-git checkout 8-0-stable
+git checkout 8-3-stable
 
 bundle install --without development test postgres aws --deployment
 bundle exec rake db:migrate RAILS_ENV=production
@@ -509,7 +509,7 @@ config.serve_static_assets = true
 Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
 
 ```bash
-svc -u ~/service/sidekiq && svc -u ~/service/gitlab
+svc -u ~/service/sidekiq && svc -u ~/service/gitlab-workhorse && svc -u ~/service/gitlab
 ```
 
 Nach dem Start schadet ein erneuter Check nicht:
