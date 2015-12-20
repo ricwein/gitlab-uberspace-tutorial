@@ -19,3 +19,12 @@ Setup deamons according to [uberspace documentation](https://wiki.uberspace.de/s
     uberspace-setup-service git-http-server ~/bin/git-http-server
 
 That's it! Happy coding :-)
+
+## update from git-http-server to gitlab-workhorse
+    cd ~/service/git-http-server
+    rm ~/service/git-http-server
+    svc -dx . log
+    rm -rf ~/etc/run-git-http-server
+    cd ~/bin
+    mv git-http-server.sh gitlab-workhorse.sh
+    uberspace-setup-service gitlab-workhorse ~/bin/gitlab-workhorse.sh
