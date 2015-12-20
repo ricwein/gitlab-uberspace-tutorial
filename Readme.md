@@ -257,7 +257,7 @@ password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf 
 `nano config/environments/production.rb`
 
 ```ruby
-config.serve_static_assets = true
+config.serve_static_files = true
 ```
 
 
