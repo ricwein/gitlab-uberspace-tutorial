@@ -316,8 +316,8 @@ Eine kurze Anleitung und die Service-Skripte findet ihr in seiner eigenen [GitLa
 - [sidekiq-Service](services/sidekiq) *man beachte den neuen Parameter `-q archive_repo` um Downloads von Repositories als gepacktes Archiv zu ermöglichen*
 - [gitlab-Service](services/gitlab) (Unicorn)
 
-**Und für den Neuen git-http-server:**
-- [git-http-server-Service](services/gitlab-workhorse)
+**Und für das neue gitlab-workhorse:**
+- [gitlab-workhorse-Service](services/gitlab-workhorse)
 
 In dem Script sind am Anfang zwei Ports anzugeben.
 1. Für `[your unicorn port]` nehmen wir den unter [unicorn.rb Konfiguration](#unicornrb-konfiguration) ausgewählten Port für den Unicorn-Webserver.
