@@ -4,7 +4,7 @@ unicorn_port=[your unicorn port]
 export GITLAB_PATH="$HOME/gitlab"
 pid_path="$GITLAB_PATH/tmp/pids"
 socket_path="$GITLAB_PATH/tmp/sockets"
-filename="gitlab-git-http-server"
+filename="gitlab-workhorse"
 
 gitlab_git_http_server_options="-listenUmask 0 -listenNetwork tcp -listenAddr localhost:$http_port -authBackend http://127.0.0.1:$unicorn_port"
 gitlab_git_http_server_repo_root="$HOME/repositories"
