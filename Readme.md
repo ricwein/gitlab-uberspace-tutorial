@@ -145,7 +145,9 @@ Nachdem die Konfigurationdatei geändert wurde.
 
 ## Gitlab-Workhorse ##
 
-Neu hinzugekommen ist seit Gitlab 8.0 der so genannte *git-http-server*. Dieser wird seit Gitlab 8.2 *gitlab-workhorse* genannt. Ein kleiner Prozess, der beim Pushen und Pullen von Git-Repositories als HTTP-Server einspringt, und so den Unicorn-Server entlastet (damit das Frontend weiterhin flüssig läuft).
+Neu hinzugekommen ist seit Gitlab 8.0 der so genannte ~~*git-http-server*~~. Dieser wird seit Gitlab 8.2 *gitlab-workhorse* genannt. Ein kleiner Prozess, der beim Pushen und Pullen von Git-Repositories als HTTP-Server einspringt, und so den Unicorn-Server entlastet (damit das Frontend weiterhin flüssig läuft). Workhorse benötigt **GO*lang***, um zu kompilieren.
+
+> Leider ist GO unter CentOS 5 nicht lauffähig! Siehe dazu: [Go auf deinem Uberspace](https://wiki.uberspace.de/development:golang).
 
 ```bash
 cd ~
@@ -466,6 +468,9 @@ Falls Ihr für SSH einen [ControlMaster](https://wiki.uberspace.de/faq?s[]=contr
 
 Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fertig!
 
+### Shared-Keys ###
+
+Eine weiter Lösung kann durch die manuelle Bearbeitung der Gitlab-Shell Einträge liefern. Weiter Details können [hier als Gist](https://gist.github.com/hanseartic/368a63933afb7c9f7e6b) nachgelesen werden.
 
 ## Upgraden ##
 
@@ -503,7 +508,7 @@ bundle exec rake assets:clean assets:precompile cache:clear RAILS_ENV=production
 `nano config/environments/production.rb`
 
 ```ruby
-config.serve_static_assets = true
+config.serve_static_files = true
 ```
 
 Falls alles erfolgreich verlief kann GitLab nun wieder gestartet werden.
