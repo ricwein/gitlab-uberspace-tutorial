@@ -340,7 +340,7 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
     RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
 
     # redirect http-git requests to gitlab-workhorse
-    RewriteCond %{REQUEST_URI} .*\.(git)
+    RewriteCond %{REQUEST_URI} .*\.(git|zip)
     RewriteRule .* http://127.0.0.1:[your git-http port]%{REQUEST_URI} [P,QSA]
 
     # redirect any other traffic to unicorn
@@ -470,7 +470,7 @@ Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fer
 
 ### Shared-Keys ###
 
-Eine weiter Lösung kann durch die manuelle Bearbeitung der Gitlab-Shell Einträge liefern. Weiter Details können [hier als Gist](https://gist.github.com/hanseartic/368a63933afb7c9f7e6b) nachgelesen werden.
+Eine weitere Lösung kann durch die manuelle Bearbeitung der Gitlab-Shell Einträge liefern. Weiter Details können [hier als Gist](https://gist.github.com/hanseartic/368a63933afb7c9f7e6b) nachgelesen werden.
 
 ## Upgraden ##
 
