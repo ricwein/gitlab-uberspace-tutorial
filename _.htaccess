@@ -7,9 +7,14 @@
 	RewriteCond %{ENV:HTTPS} !=on
 	RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
 
-	# redirect http-git requests to git-http-server
-	RewriteCond %{REQUEST_URI} .*\.(git|zip)
-	RewriteRule .* http://127.0.0.1:[your git-http port]%{REQUEST_URI} [P,QSA]
+	# don't escape encoded characters in api requests
+	RewriteCond %{REQUEST_URI} ^/api/v3/.*
+	RewriteRule .* http://127.0.0.1:[your gitlab-workhorse port]%{REQUEST_URI} [P,QSA,NE]
+
+	# redirect file download requests to gitlab-workhorse
+	RewriteCond %{REQUEST_URI} .*\.(git|zip) [OR]
+	RewriteCond %{REQUEST_URI} .*/raw/
+	RewriteRule .* http://127.0.0.1:[your gitlab-workhorse port]%{REQUEST_URI} [P,QSA]
 
 	# redirect any other traffic to unicorn
 	RewriteBase /
@@ -18,3 +23,4 @@
 </IfModule>
 
 RequestHeader set X-Forwarded-Proto https
+RequestHeader set X-Forwarded-Ssl on
