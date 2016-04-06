@@ -323,7 +323,7 @@ Eine kurze Anleitung und die Service-Skripte findet ihr in seiner eigenen [GitLa
 
 In dem Script sind am Anfang zwei Ports anzugeben.
 1. Für `[your unicorn port]` nehmen wir den unter [unicorn.rb Konfiguration](#unicornrb-konfiguration) ausgewählten Port für den Unicorn-Webserver.
-2. Für `[your git-http port]` suchen wir uns einen neuen freien Port nach dem selben Schema aus (zwischen 1024 und 61000) und merken uns diesen nun auch noch.
+2. Für `[your gitlab-workhorse port]` suchen wir uns einen neuen freien Port nach dem selben Schema aus (zwischen 1024 und 61000) und merken uns diesen nun auch noch.
 
 ## Apache Redirect ##
 
@@ -339,9 +339,14 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
     RewriteCond %{ENV:HTTPS} !=on
     RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
 
-    # redirect http-git requests to gitlab-workhorse
-    RewriteCond %{REQUEST_URI} .*\.(git|zip)
-    RewriteRule .* http://127.0.0.1:[your git-http port]%{REQUEST_URI} [P,QSA]
+    # don't escape encoded characters in api requests
+    RewriteCond %{REQUEST_URI} ^/api/v3/.*
+    RewriteRule .* http://127.0.0.1:[your gitlab-workhorse port]%{REQUEST_URI} [P,QSA,NE]
+
+    # redirect file download requests to gitlab-workhorse
+    RewriteCond %{REQUEST_URI} .*\.(git|zip) [OR]
+    RewriteCond %{REQUEST_URI} .*/raw/
+    RewriteRule .* http://127.0.0.1:[your gitlab-workhorse port]%{REQUEST_URI} [P,QSA]
 
     # redirect any other traffic to unicorn
     RewriteBase /
@@ -350,6 +355,7 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
 </IfModule>
 
 RequestHeader set X-Forwarded-Proto https
+RequestHeader set X-Forwarded-Ssl on
 ```
 
 > siehe Beispiel-.htaccess: [.htaccess](_.htaccess)
