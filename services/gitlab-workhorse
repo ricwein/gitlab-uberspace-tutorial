@@ -1,5 +1,5 @@
 #!/bin/sh
-http_port=[your git-http port]
+http_port=[your your gitlab-workhorse port]
 unicorn_port=[your unicorn port]
 export GITLAB_PATH="$HOME/gitlab"
 pid_path="$GITLAB_PATH/tmp/pids"
