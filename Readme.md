@@ -216,7 +216,7 @@ git:
 bin_path: /home/[Nutzername]/.toast/armed/bin/git
 ```
 
-**Der `git_path` sollte stimmen, falls git per Toast installiert wurde. Trotzdem sicherheitshalber per `which git` den Pfad auf seine Richtigkeit überprüfen!**
+**Der `bin_path` sollte stimmen, falls git per Toast installiert wurde. Trotzdem sicherheitshalber per `which git` den Pfad auf seine Richtigkeit überprüfen!**
 
 
 ### unicorn.rb Konfiguration
