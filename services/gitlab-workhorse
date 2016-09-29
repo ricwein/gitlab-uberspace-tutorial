@@ -6,7 +6,8 @@ pid_path="$GITLAB_PATH/tmp/pids"
 socket_path="$GITLAB_PATH/tmp/sockets"
 filename="gitlab-workhorse"
 
-gitlab_git_http_server_options="-listenUmask 0 -listenNetwork tcp -listenAddr localhost:$http_port -authBackend http://127.0.0.1:$unicorn_port"
+gitlab_workhorse_secret="$GITLAB_PATH/.gitlab_workhorse_secret"
+gitlab_git_http_server_options="-listenUmask 0 -listenNetwork tcp -listenAddr localhost:$http_port -authBackend http://127.0.0.1:$unicorn_port -secretPath $gitlab_workhorse_secret"
 gitlab_git_http_server_repo_root="$HOME/repositories"
 gitlab_git_http_server_log="$GITLAB_PATH/log/$filename.log"
 
