@@ -468,10 +468,9 @@ IdentityFile ~/.ssh/shellAccess
 IdentitiesOnly yes
 ```
 
+> ~~**Einziges Problem** an dieser Lösung sind die SSL-Zertifikate. Uberspace biete selber zwar Wildcard-Zertifikate an, diese sind aber natürlich nicht für eigene Domains oder Sub-Subdomains der User gültig. Im Allgemeinen lässt Uberspace zwar [eigene Zertifikate](https://wiki.uberspace.de/webserver:https#nutzung_eigener_ssl-zertifikate) zu. Anbieter wie [StartCom](https://www.startssl.com/) bieten sogar einfache *Class 1* Zertifikate gratis an! Subdomains decken diese jedoch nicht ab (**Ausnahme**: StartSSL Class 1 beinhaltet eine Subdomain!) . Entsprechende *Class 2* Zertifikate kosten bei allen Stellen etwas.~~
 
-> **Einziges Problem** an dieser Lösung sind die SSL-Zertifikate.
-Uberspace biete selber zwar Wildcard-Zertifikate an, diese sind aber natürlich nicht für eigene Domains oder Sub-Subdomains der User gültig.
-> Im Allgemeinen lässt Uberspace zwar [eigene Zertifikate](https://wiki.uberspace.de/webserver:https#nutzung_eigener_ssl-zertifikate) zu. Anbieter wie [StartCom](https://www.startssl.com/) bieten sogar einfache *Class 1* Zertifikate gratis an! Subdomains decken diese jedoch nicht ab (**Ausnahme**: StartSSL Class 1 beinhaltet eine Subdomain!) . Entsprechende *Class 2* Zertifikate kosten bei allen Stellen etwas.
+> Dank Let's Encrypt und dem hervorragend Support bei [Uberspace](https://wiki.uberspace.de/webserver:https#let_s-encrypt-zertifikate) sollte es für niemanden mehr ein Hinderniss sein, die eigene Seite mit einem entsprechenden Zertifikat abzusichern. Auch Subdomains sind kein Problem. Wer noch ein Zertifikat bei [StartCom](https://www.startssl.com/) hat, sollte demnächst wechseln, da deren root-Zertifikat in nächster Zeit von Firefox und Chrome nicht mehr getrusted wird: [Googles Certificate-Transparency-Projekt](https://docs.google.com/document/d/1C6BlmbeQfn4a9zydVi2UvjBGv6szuSB4sMYUcVrR8vQ/edit) && [Golem](http://www.golem.de/news/zertifikate-mozilla-will-startcom-und-wosign-das-vertrauen-entziehen-1609-123462.html).
 
 ### ControlMaster ###
 
