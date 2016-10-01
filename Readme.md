@@ -1,4 +1,4 @@
-# Installation von GitLab 8.3 #
+# Installation von GitLab 8.12 #
 
 1. [Abhängigkeiten](#abhängigkeiten)
 2. [System User](#system-user)
@@ -38,8 +38,8 @@ Git wird in der Version 1.7.10+ benötigt. *Nicht zu verwechseln mit 1.7.1!*
 Git ist auch bereits auf den Servern installiert. Prüft mit `git --version` eure Version. Falls sie zu alt ist könnt ihr über Toast eine neuere Version installieren. Sucht dazu [hier](https://www.kernel.org/pub/software/scm/git/) eine Version und kopiert den Link zum Tarball. Mit `toast arm [URL zum Tarball]` wird diese installiert und eingerichtet.
 
 ```bash
-#Git 2.8.1:
-toast arm https://www.kernel.org/pub/software/scm/git/git-2.8.1.tar.gz
+#Git 2.10.0:
+toast arm https://www.kernel.org/pub/software/scm/git/git-2.10.0.tar.gz
 # Dies kann einige Minuten dauern...
 ```
 
@@ -62,7 +62,7 @@ toast arm cmake
 > Falls toast `cmake` nicht selbst findet, oder die Installation fehlschlägt, lässt sich auch explizit ein Archiv angeben. Mögliche Versionen finden sich [hier](https://cmake.org/files/) (äquivalent zur installation von `git`):
 
 ```bash
-toast arm http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz
+toast arm https://cmake.org/files/v3.0/cmake-3.0.2.tar.gz
 ```
 
 ### Ruby ###
