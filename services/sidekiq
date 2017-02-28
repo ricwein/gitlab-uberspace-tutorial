@@ -33,5 +33,6 @@ cd $GITLAB_PATH/
 app_root=$GITLAB_PATH
 sidekiq_pidfile="$app_root/tmp/pids/sidekiq.pid"
 sidekiq_logfile="$app_root/log/sidekiq.log"
+sidekiq_config="$app_root/config/sidekiq_queues.yml"
 
-exec bundle exec sidekiq -q post_receive -q mailers -q system_hook -q project_web_hook -q archive_repo -q gitlab_shell -q common -q default -e $RAILS_ENV -P $sidekiq_pidfile >> $sidekiq_logfile 2>&1
+exec bundle exec sidekiq -C "${sidekiq_config}" -e $RAILS_ENV -P $sidekiq_pidfile >> $sidekiq_logfile 2>&1
