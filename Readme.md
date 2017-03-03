@@ -15,8 +15,9 @@
 
 13. [Upgraden](#upgraden)
 14. [Upgraden von 7.x auf 8.x](#upgraden-von-7x-auf-8x)
+15. [Upgraden von 8.x auf 8.17](#upgraden-von-8x-auf-817)
 
-15. [Impressum](#impressum)
+16. [Impressum](#impressum)
 
 
 Diese Anleitung bezieht sich direkt auf die offiziellen Installationsanleitung [hier](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md). Für Uberspace sind jedoch einige Dinge unwichtig, andere zusätzlich nötig. Genauere Beschreibungen sind in der offiziellen Anleitung zu finden. Viele der Befehle aus der offiziellen Anleitung laufen jedoch auch ohne das sudo.
@@ -548,6 +549,13 @@ Um die Zuordnung zum jeweiligen WebServer unserem Apache mitzuteilen, müssen fo
 RewriteCond %{REQUEST_URI} .*\.(git)
 RewriteRule .* http://127.0.0.1:[your gitlab-workhorse port]%{REQUEST_URI} [P,QSA]
 ```
+
+## Upgraden von 8.x auf 8.17 ##
+
+Seit Version 8.17 verwendet Gitlab die node.js Bibliotek [webpack](https://webpack.js.org) um seine frontend assets zu kompilieren. Webpack setzt eine node Version von `> v4.3.0` voraus.
+
+Auf dem Uberspace lässt sich node wie in der Anleitung [hier](https://wiki.uberspace.de/development:nodejs) beschrieben installieren.
+
 
 ## Impressum ##
 
