@@ -293,7 +293,7 @@ bundle exec rake gitlab:setup RAILS_ENV=production
 ## Precompile assets ##
 
 ```bash
-bundle exec rake assets:precompile RAILS_ENV=production
+bundle exec rake gitlab:assets:clean gitlab:assets:compile cache:clear RAILS_ENV=production
 ```
 
 Dieser Vorgang kann eine Weile dauern...
