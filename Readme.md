@@ -481,7 +481,16 @@ Dazu einfach `ControlMaster no` noch zum Host in die ssh-config hinzufügen. Fer
 
 ### Shared-Keys ###
 
-Eine weitere Lösung kann durch die manuelle Bearbeitung der Gitlab-Shell Einträge liefern. Weiter Details können [hier als Gist](https://gist.github.com/hanseartic/368a63933afb7c9f7e6b) nachgelesen werden.
+Eine weitere Lösung ist die manuelle Bearbeitung der Gitlab-Shell Einträge in der `~/.ssh/authorized_keys`.
+
+Dazu kann die `command` Option in [authorized_keys](http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man8/sshd.8?query=sshd#AUTHORIZED_KEYS_FILE_FORMAT) angepasst werden:
+```bash
+command="if [ -t 0 ]; then bash; elif [[ $SSH_ORIGINAL_COMMAND =~ ^scp.* ]]; then eval $SSH_ORIGINAL_COMMAND; else /path/to/gitlab-shell/bin/gitlab-shell key-1; fi",no-port-forwarding,no-X11-forwarding,no-agent-forwarding ssh-rsa....
+```
+So bekommt man eine Shell wenn ein `pty` angefordert wurde bzw. `scp` wird zugelassen, ansonsten wird die Gitlab-Shell aufgerufen.
+Nicht vergessen, dass die Zahl nach `key-` übereinstimmt und die Option `no-pty` entfernt wird.
+
+Siehe auch [diesen Gist](https://gist.github.com/hanseartic/368a63933afb7c9f7e6b)
 
 ## Upgraden ##
 
