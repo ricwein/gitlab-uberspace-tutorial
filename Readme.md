@@ -1,4 +1,4 @@
-# Installation von GitLab 8.12 #
+# Installation von GitLab 8.14.0 #
 
 1. [Abhängigkeiten](#abhängigkeiten)
 2. [System User](#system-user)
