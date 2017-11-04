@@ -1,6 +1,6 @@
 #!/bin/sh
-http_port=[your your gitlab-workhorse port]
-unicorn_port=[your unicorn port]
+http_port=[workhorsePort]
+unicorn_port=[unicornPort]
 export GITLAB_PATH="$HOME/gitlab"
 pid_path="$GITLAB_PATH/tmp/pids"
 socket_path="$GITLAB_PATH/tmp/sockets"

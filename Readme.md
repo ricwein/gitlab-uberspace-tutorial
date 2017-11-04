@@ -1,4 +1,4 @@
-# Installation von GitLab 8.12 #
+# Installation von GitLab 8.14.0 #
 
 1. [Abhängigkeiten](#abhängigkeiten)
 2. [System User](#system-user)
@@ -106,6 +106,22 @@ echo "gem: --user-install --no-rdoc --no-ri" > ~/.gemrc
 
 Auf den Uberspace Servern gibt es *nicht* die Möglichkeit einen extra User `git` anzulegen. Der Normale Nutzer geht allerdings auch. Jedoch muss das in **fast allen** Konfigurationsfiles beachtet werden.
 
+## Freie Portnummern finden ##
+
+Wir brauchen insgesamt zwei freie Ports. Einen `unicornPort` und einen `workhorsePort`. Diese müsst ihr euch merken oder notieren.
+
+Um zu überprüfen ob der gewählte Port noch frei ist, führt folgenden Befehl durch. Ist die Rückgabe leer, so ist der Port noch nicht belegt.
+
+```bash
+netstat -tulpen | grep [port]
+```
+
+> **Um Verwirrungen vorzubeugen:**
+
+> Laut [Uberspace-Wiki](https://wiki.uberspace.de/system:ports) sind Ports nur im Bereich von 61000 bis 65535 erlaubt. Dies bezieht sich aber nur auf Ports, die wir später nach Außen auf dem Server öffnen wollen!
+> Wir hingegen wollen den Port aber nur intern nutzen, um [später](#apache-redirect) den Webserver per .htaccess vom externen Port 80 auf unseren lokalen Port weiterzuleiten.
+> Es empfiehlt sich also vermutlich ein Port irgendwo zwischen 1024 und 61000 zu nehmen. Eventuell aufpassen, dass man nicht gerade einen von den [well-known Ports](https://de.wikipedia.org/wiki/Liste_der_standardisierten_Ports) erwischt.
+
 
 ## GitLab Shell ##
 
@@ -113,7 +129,7 @@ Unten die Shell-Befehle nach Anleitung.
 
 ```bash
 cd ~
-git clone https://gitlab.com/gitlab-org/gitlab-shell.git -b v2.6.8
+git clone https://gitlab.com/gitlab-org/gitlab-shell.git -b v4.0.0
 cd gitlab-shell
 cp config.yml.example config.yml
 nano config.yml
@@ -126,7 +142,7 @@ Außerdem sind folgende Änderungen durchzuführen:
 
 ```ruby
 user: [Nutzername]
-gitlab_url: "https://[Nutzername].[Host].uberspace.de"
+gitlab_url: "http://localhost:[unicornPort]"
 
 #[...]Redis Einstellungen
 
@@ -140,8 +156,6 @@ bin: /usr/local/bin/redis-cli
 socket: /home/[Nutzername]/.redis/sock
 # der Pfad findet sich auch in der Datei '~/.redis/conf' um sicherzugehen.
 ```
-
-**Für die gitlab_url mit https muss der komplette Pfad inklusive Server und .uberspace.de angegeben werden, damit das Zertifikat auch passt. Auch wenn ihr eine eigene Domain haben solltet!**
 
 Nachdem die Konfigurationdatei geändert wurde.
 
@@ -157,7 +171,7 @@ Neu hinzugekommen ist seit Gitlab 8.0 der so genannte ~~*git-http-server*~~. Die
 
 ```bash
 cd ~
-git clone https://gitlab.com/gitlab-org/gitlab-workhorse.git
+git clone https://gitlab.com/gitlab-org/gitlab-workhorse.git -b v1.0.0
 cd gitlab-workhorse
 make
 ```
@@ -166,7 +180,7 @@ make
 
 ```bash
 cd ~
-git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 8-3-stable gitlab
+git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b v8.14.0 gitlab
 cd gitlab
 
 # init some configs
@@ -199,7 +213,7 @@ git config --global core.autocrlf input
 `nano config/gitlab.yml`
 
 ```ruby
-host: [Nutzername].[Host].uberspace.de
+host: [Nutzername].[Host].uberspace.de # Die URL unter der GitLab am Ende laufen soll
 https: true
 [...]
 user: [Nutzername] # Auskommentierung muss entfernt werden ("#" am Anfang der Zeile entfernen)!
@@ -225,22 +239,7 @@ bin_path: /home/[Nutzername]/.toast/armed/bin/git
 `nano config/unicorn.rb`
 
 alle `/home/git/...` ändern in `/home/[Nutzername]/...`
-`listen "127.0.0.1:8080"...` *port* in einen noch freien Port ändern. z.B. für den Port 9765 in: `listen "127.0.0.1:9765"...`
-
-Um zu überprüfen ob der gewählte Port noch frei ist, führt folgenden Befehl durch. Ist die Rückgabe leer, so ist der Port noch nicht belegt.
-
-```bash
-netstat -tulpen | grep [port]
-```
-
-**Diesen Port am besten merken oder irgendwo notieren. Wir brauche ihn später nochmal! (unter dem Namen `[your unicorn port]`)**
-
-> **Um Verwirrungen vorzubeugen:**
-
-> Laut [Uberspace-Wiki](https://wiki.uberspace.de/system:ports) sind Ports nur im Bereich von 61000 bis 65535 erlaubt. Dies bezieht sich aber nur auf Ports, die wir später nach Außen auf dem Server öffnen wollen!
-> Wir hingegen wollen den Port aber nur intern nutzen, um [später](#apache-redirect) den Webserver per .htaccess vom externen Port 80 auf unseren lokalen Port weiterzuleiten.
-> Es empfiehlt sich also vermutlich ein Port irgendwo zwischen 1024 und 61000 zu nehmen. Eventuell aufpassen, dass man nicht gerade einen von den [well-known Ports](https://de.wikipedia.org/wiki/Liste_der_standardisierten_Ports) erwischt.
-
+`listen "127.0.0.1:[unicornPort]"...` z.B. für den Port 9765 in: `listen "127.0.0.1:9765"...`
 
 ### resque.yml Konfiguration
 
@@ -254,6 +253,8 @@ Socket ändern, falls er bei der GitLab Shell schon anders war.
 Unter `production: ` die MySQL Nutzerdaten eintragen:
 
 ```ruby
+encoding: utf8
+collation: utf8_general_ci
 database: [Nutzername]_[Datenbankname] # Datenbankname nach uberspace-Namenskonvention
 username: [Nutzername]
 password: [MySQL Passwort] #Wenn es nicht geändert wurde, dann unter ~/.my.cnf zu finden
@@ -290,12 +291,6 @@ bundle install --deployment --without development test postgres aws
 bundle exec rake gitlab:setup RAILS_ENV=production
 ```
 
-## Precompile assets ##
-
-```bash
-bundle exec rake gitlab:assets:clean gitlab:assets:compile cache:clear RAILS_ENV=production
-```
-
 Dieser Vorgang kann eine Weile dauern...
 
 ### Tippt 'yes' zum erstellen der Datenbank ###
@@ -311,6 +306,11 @@ password......5iveL!fe
 
 **Den Benutzernamen und das Passwort brauchen wir später für den erstmaligen Login noch!**
 
+## Precompile assets ##
+
+```bash
+bundle exec rake assets:clean assets:precompile cache:clear RAILS_ENV=production
+```
 
 ### GitLab als Uberspace-Service verwalten ###
 
@@ -328,8 +328,8 @@ Eine kurze Anleitung und die Service-Skripte findet ihr in seiner eigenen [GitLa
 - [gitlab-workhorse-Service](services/gitlab-workhorse)
 
 In dem Script sind am Anfang zwei Ports anzugeben.
-1. Für `[your unicorn port]` nehmen wir den unter [unicorn.rb Konfiguration](#unicornrb-konfiguration) ausgewählten Port für den Unicorn-Webserver.
-2. Für `[your gitlab-workhorse port]` suchen wir uns einen neuen freien Port nach dem selben Schema aus (zwischen 1024 und 61000) und merken uns diesen nun auch noch.
+1. Für `[unicornPort]` nehmen wir den ausgewählten Port für den Unicorn-Webserver.
+2. Für `[workhorsePort]` nehmen wir den ausgewählten Port für den Workhorse-Server.
 
 ## Apache Redirect ##
 
@@ -347,17 +347,17 @@ In `~/html` oder einem Subdomain-Ordner eine `.htaccess` erstellen und damit fü
 
     # don't escape encoded characters in api requests
     RewriteCond %{REQUEST_URI} ^/api/v3/.*
-    RewriteRule .* http://127.0.0.1:[your gitlab-workhorse port]%{REQUEST_URI} [P,QSA,NE]
+    RewriteRule .* http://127.0.0.1:[workhorsePort]%{REQUEST_URI} [P,QSA,NE]
 
     # redirect file download requests to gitlab-workhorse
     RewriteCond %{REQUEST_URI} .*\.(git|zip) [OR]
     RewriteCond %{REQUEST_URI} .*/raw/
-    RewriteRule .* http://127.0.0.1:[your gitlab-workhorse port]%{REQUEST_URI} [P,QSA]
+    RewriteRule .* http://127.0.0.1:[workhorsePort]%{REQUEST_URI} [P,QSA]
 
     # redirect any other traffic to unicorn
     RewriteBase /
     RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
-    RewriteRule .* http://127.0.0.1:[your unicorn port]%{REQUEST_URI} [P,QSA]
+    RewriteRule .* http://127.0.0.1:[unicornPort]%{REQUEST_URI} [P,QSA]
 </IfModule>
 
 RequestHeader set X-Forwarded-Proto https
