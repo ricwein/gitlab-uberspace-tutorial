@@ -274,8 +274,6 @@ config.serve_static_files = true
 
 **Achtung:** [Gabriel Bretschner][1] Hat darauf hingewiesen, dass es auf Servern unter CentOS 5 zu Problemen mit *Charlock Holmes* kommen kann. Die Lösung ist recht einfach und stammt aus dem [Uberspace-Wiki](https://wiki.uberspace.de/development:ruby#charlock_holmes):
 
-
-
 ```bash
 bundle config build.charlock_holmes --with-icu-dir=/package/host/localhost/icu4c
 ```
