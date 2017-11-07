@@ -73,7 +73,7 @@ Ruby wird in der Version 2.0+ benötigt.
 Auf den Uberspace Servern wird standardmäßig eine ältere Version genutzt. [Hier](https://wiki.uberspace.de/development:ruby) wird erklärt wie die neueren zur Verfügung stehenden Versionen aktiviert werden.
 
 ```bash
-cat \<\<'__EOF__' >> ~/.bashrc
+cat <<'__EOF__' >> ~/.bashrc
 export PATH=/package/host/localhost/ruby-2.2.3/bin:$PATH
 export PATH=$HOME/.gem/ruby/2.2.0/bin:$PATH
 __EOF__
@@ -222,7 +222,7 @@ user: [Nutzername] # Auskommentierung muss entfernt werden ("#" am Anfang der Ze
 **Interessant** für alle, die Gitlab in einer Subdomain (zB. für die [SSH-Keys](#eindeutige-logins-durch-subdomains)) oder in einem Unterordner verwenden wollen:
 Mit dem Eintrag `ssh_host` lässt sich für SSH ein anderer Host angeben, als für http (`host`).
 
-Unter 3: Advanced Settings:
+Unter 4: Advanced Settings:
 
 alle `/home/git/...` ändern in `/home/[Nutzername]/...`
 
@@ -273,6 +273,8 @@ config.serve_static_files = true
 ## Install Bundle Gems ##
 
 **Achtung:** [Gabriel Bretschner][1] Hat darauf hingewiesen, dass es auf Servern unter CentOS 5 zu Problemen mit *Charlock Holmes* kommen kann. Die Lösung ist recht einfach und stammt aus dem [Uberspace-Wiki](https://wiki.uberspace.de/development:ruby#charlock_holmes):
+
+
 
 ```bash
 bundle config build.charlock_holmes --with-icu-dir=/package/host/localhost/icu4c
